@@ -1,10 +1,8 @@
 from logging.handlers import RotatingFileHandler
 import sys
 
-from pydantic import BaseModel, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from enums import Stage
 
 
 class Settings(BaseSettings):
@@ -15,9 +13,6 @@ class Settings(BaseSettings):
     DBUSER: str
     DBHOST: str
     echo: bool = False
-    pool_size: int = 50
-    max_overflow: int = 10
-    stage: Stage
 
     @property
     def postgres_db_url(self) -> str:

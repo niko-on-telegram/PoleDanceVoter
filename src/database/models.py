@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
     __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
 class User(Base):

@@ -9,15 +9,11 @@ class DatabaseConnector:
     def __init__(
             self,
             url: str,
-            echo: bool = False,
-            pool_size: int = 5,
-            max_overflow: int = 10,
+            echo: bool = False
     ) -> None:
         self.engine: AsyncEngine = create_async_engine(
             url=url,
-            echo=echo,
-            pool_size=pool_size,
-            max_overflow=max_overflow,
+            echo=echo
         )
         self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
             bind=self.engine,
@@ -37,7 +33,5 @@ class DatabaseConnector:
 def get_db() -> DatabaseConnector:
     return DatabaseConnector(
         url=settings.postgres_db_url,
-        echo=settings.echo,
-        pool_size=settings.pool_size,
-        max_overflow=settings.max_overflow,
+        echo=settings.echo
     )

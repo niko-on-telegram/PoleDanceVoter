@@ -8,10 +8,10 @@ from database.crud.user import add_user_to_db, get_user_from_db_by_tg_id
 
 class AuthMiddleware(BaseMiddleware):
     async def __call__(
-            self,
-            handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
-            event: Message,
-            data: Dict[str, Any],
+        self,
+        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        event: Message,
+        data: Dict[str, Any],
     ) -> Any:
         db_session = data['db_session']
         user = await get_user_from_db_by_tg_id(event.from_user.id, db_session)

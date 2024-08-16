@@ -26,9 +26,7 @@ class Settings(BaseSettings):
         "pk": "pk_%(table_name)s",
     }
 
-    model_config = SettingsConfigDict(env_file='.env',
-                                      env_file_encoding='utf-8',
-                                      case_sensitive=False)
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', case_sensitive=False)
 
 
 settings = Settings()

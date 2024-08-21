@@ -11,12 +11,11 @@ router = Router()
 
 @router.message(CommandStart())
 async def start_message(message: types.Message, user: User) -> None:
-    photo = URLInputFile(
-        "https://cdn1.flamp.ru/1489ba9b728d7498f6856aa144123716.jpeg",
-        filename="1489ba9b728d7498f6856aa144123716.jpeg"
-    )
     await message.answer_photo(
-        photo,
+        URLInputFile(
+            "https://cdn1.flamp.ru/1489ba9b728d7498f6856aa144123716.jpeg",
+            filename="1489ba9b728d7498f6856aa144123716.jpeg"
+        ),
         caption=f'Hello, {user.fullname}. Список участников:',
         reply_markup=get_contestant_list()
     )

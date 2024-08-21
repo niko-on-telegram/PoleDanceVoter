@@ -23,13 +23,14 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
-    count_votes: Mapped[int]
+
+    #count_votes: Mapped[int | None]
 
     def __str__(self):
         return (f"User(fullname={self.fullname}, "
                 f"telegram_id={self.telegram_id}, "
-                f"username={self.username}, "
-                f"count_votes={self.count_votes})")
+                f"username={self.username}, ")
+        #f"count_votes={self.count_votes})")
 
     def __repr__(self):
         return self.__str__()
@@ -40,8 +41,8 @@ class Contenstant(Base):
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     fullname: Mapped[str]
-    description: Mapped[str | None]
     count_votes: Mapped[int]
+    description: Mapped[str | None]
     video_first: Mapped[str | None]
     video_second: Mapped[str | None]
     video_third: Mapped[str | None]

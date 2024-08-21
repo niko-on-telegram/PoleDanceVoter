@@ -9,6 +9,7 @@ async def add_user_to_db(user, db_session) -> User:
         telegram_id=user.id,
         fullname=user.full_name,
         username=user.username,
+        count_votes=user.count_votes
     )
     db_session.add(new_user)
     await db_session.flush()

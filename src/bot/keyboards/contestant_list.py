@@ -4,24 +4,24 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def get_contestant_from_db():
-    return {"1": "https://github.com",
-            "2": "https://github.com",
-            "3": "https://github.com",
-            "4": "https://github.com",
-            "5": "https://github.com",
-            "6": "https://github.com",
-            "7": "https://github.com",
-            "8": "https://github.com",
-            "9": "https://github.com",
-            "10": "https://github.com"
+    return {"Снежанна": {"link": "https://github.com", "votes": 13},
+            "Владислав": {"link": "https://github.com", "votes": 455},
+            "Педро": {"link": "https://github.com", "votes": 666},
+            "Анжелика": {"link": "https://github.com", "votes": 134},
+            "Гоги": {"link": "https://github.com", "votes": 12},
+            "Рикардо": {"link": "https://github.com", "votes": 999},
+            "Белатриса": {"link": "https://github.com", "votes": 132},
+            "Кирилл": {"link": "https://github.com", "votes": 143},
+            "Анна": {"link": "https://github.com", "votes": 12},
+            "Зульфия": {"link": "https://github.com", "votes": 16}
             }
 
 
 def get_contestant_list() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    for name, link in get_contestant_from_db().items():
+    for name, data in get_contestant_from_db().items():
         kb.row(types.InlineKeyboardButton(
-            text=name, url=link)
+            text=f'{name}      Голоса: {data["votes"]}', url=data["link"])
         )
 
     return kb.as_markup(resize_keyboard=True)

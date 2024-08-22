@@ -13,14 +13,11 @@ router = Router()
 @router.message(CommandStart())
 async def start_message(message: types.Message, user: User, db_session) -> None:
     contestants = await get_all_contestants(db_session)
-    if not get_all_contestants(db_session):
-        await add_contestant_to_db(db_session)
-        contestants = await get_all_contestants(db_session)
     await message.answer_photo(
         URLInputFile(
             "https://cdn1.flamp.ru/1489ba9b728d7498f6856aa144123716.jpeg",
             filename="1489ba9b728d7498f6856aa144123716.jpeg",
         ),
         caption=f'Hello, {user.fullname}. Список участников:',
-        reply_markup=await get_contestant_list(contestants),
+        reply_markup=get_contestant_list(contestants),
     )

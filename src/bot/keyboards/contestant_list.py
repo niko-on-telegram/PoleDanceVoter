@@ -5,7 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database.models import Contenstant
 
 
-async def get_contestant_list(contestants: list[Contenstant]) -> InlineKeyboardMarkup:
+def get_contestant_list(contestants: list[Contenstant]) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     for contestant in contestants:
         kb.row(

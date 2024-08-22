@@ -27,6 +27,11 @@ docker compose up -d
 create-tables
 ```
 
+6. Create contestatns
+```
+create-contestants
+```
+
 ### Run bot
 
 ```

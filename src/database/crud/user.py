@@ -5,11 +5,7 @@ from database.models import User
 
 
 async def add_user_to_db(user, db_session) -> User:
-    new_user = User(
-        telegram_id=user.id,
-        fullname=user.full_name,
-        username=user.username,
-    )
+    new_user = User(telegram_id=user.id, fullname=user.full_name, username=user.username)
     db_session.add(new_user)
     await db_session.flush()
     return new_user

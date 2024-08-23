@@ -10,7 +10,7 @@ def get_contestant_list(contestants: list[Contenstant]) -> InlineKeyboardMarkup:
     for contestant in contestants:
         kb.row(
             types.InlineKeyboardButton(
-                text=f'{contestant.fullname}     Голоса: {contestant.count_votes}', url="https://github.com"
+                text=f'{contestant.fullname}     Голоса: {contestant.count_votes}', callback_data="Contestant"
             )
         )
     return kb.as_markup(resize_keyboard=True)

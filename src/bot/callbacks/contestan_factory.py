@@ -1,6 +1,7 @@
-from typing import Optional
 from aiogram.filters.callback_data import CallbackData
+from bot.enums import ContestantEnum
 
 
 class ContestantCallbackFactory(CallbackData, prefix="contestant"):
-    value: Optional[int] = None
+    tg_id: int
+    action: ContestantEnum

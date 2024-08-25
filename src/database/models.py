@@ -37,7 +37,7 @@ class User(Base):
         return self.__str__()
 
 
-class Contenstant(Base):
+class Contestant(Base):
     __tablename__ = 'contestants'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)

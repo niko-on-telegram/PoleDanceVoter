@@ -1,20 +1,43 @@
 from aiogram import Router, types
-from aiogram import F
-from bot.keyboards.contestant_choose import get_contestant
 from aiogram.types import InputMediaVideo
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.keyboards.contestant_choose import contestant_keyboard
+from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from magic_filter import F
+
+from bot.enums import ContestantEnum
+from database.crud.contestant import get_contestant_from_db
 
 router = Router()
 
 
-@router.callback_query(F.data == "Contestant")
-async def send_contestant_choose(callback: types.CallbackQuery):
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
+async def callback_check_answer(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
+    await callback.message.answer(text=f"Check answer {callback_data.tg_id}")
+
+
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
+async def callback_question(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
+    await callback.message.answer(text=f"Question {callback_data.tg_id}")
+
+
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.VOTE))
+async def callback_vote(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
+    await callback.message.answer(text=f"Vote {callback_data.tg_id}")
+
+
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
+async def callback_profile(
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+):
+    contestant = await get_contestant_from_db(callback_data.tg_id, db_session)
     await callback.message.answer_media_group(
         protect_content=True,
         media=[
-            InputMediaVideo(media='BAACAgIAAxkDAAIBMGbJmZYh8HYpGld5Pgybhf_QRPHzAAKHTwAC_WFQSqQ9YspmOnw1NQQ'),
-            InputMediaVideo(media='BAACAgIAAxkDAAIBMWbJmZjC9wVPzsCEAAFmDmTRbS9wfAACiE8AAv1hUEojFGA6JfOJKjUE'),
-            InputMediaVideo(media='BAACAgIAAxkDAAIBMmbJmZrOtqpuFu10J8bvmNV9XRysAAKJTwAC_WFQSvh55_QXgQM4NQQ'),
+            InputMediaVideo(media=contestant.video_first),
+            InputMediaVideo(media=contestant.video_second),
+            InputMediaVideo(media=contestant.video_third),
         ],
-        reply_markup=get_contestant(),
     )
-    await callback.message.answer(text='Здесь могло быть ваше описание', reply_markup=get_contestant())
+    await callback.message.answer(text=contestant.description, reply_markup=contestant_keyboard(callback_data.tg_id))

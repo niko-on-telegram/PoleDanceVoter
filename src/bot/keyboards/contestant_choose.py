@@ -1,11 +1,18 @@
-from aiogram import types
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from bot.enums import ContestantEnum
 
 
-def get_contestant() -> InlineKeyboardMarkup:
+def contestant_keyboard(tg_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.row(types.InlineKeyboardButton(text=f'Проголосовать', callback_data="Contestant_vote"))
-    kb.row(types.InlineKeyboardButton(text= f'Задать вопрос', callback_data="Contestant_question"))
-    kb.row(types.InlineKeyboardButton(text=f'Посмотреть ответы', callback_data="Contestant_check_answers"))
+    kb.button(text='Проголосовать', callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.VOTE))
+    kb.button(
+        text='Задать вопрос', callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.QUESTION)
+    )
+    kb.button(
+        text='Посмотреть ответы',
+        callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.CHECK_ANSWER),
+    )
+    kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)

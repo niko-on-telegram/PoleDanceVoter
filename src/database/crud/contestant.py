@@ -6,14 +6,14 @@ from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
 import os
 from config import settings
-from database.models import Contenstant
+from database.models import Contestant
 from database.tables_helper import create_or_drop_db
 
 bot = Bot(token=settings.BOT_TOKEN.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 
-async def get_contestant_from_db(tg_id: int, db_session) -> Contenstant:
-    query = select(Contenstant).filter(Contenstant.telegram_id == tg_id)
+async def get_contestant_from_db(tg_id: int, db_session) -> Contestant:
+    query = select(Contestant).filter(Contestant.telegram_id == tg_id)
     result: Result = await db_session.execute(query)
     contestant = result.scalar()
     return contestant
@@ -35,7 +35,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     contestants = []
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557983,
             fullname="Снежанна",
             count_votes=13,
@@ -47,7 +47,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557984,
             fullname="Владислав",
             count_votes=143,
@@ -59,7 +59,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557985,
             fullname="Педро",
             count_votes=1563,
@@ -71,7 +71,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557986,
             fullname="Анжелика",
             count_votes=1653,
@@ -83,7 +83,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557987,
             fullname="Гоги",
             count_votes=16543,
@@ -95,7 +95,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557988,
             fullname="Рикардо",
             count_votes=1342,
@@ -107,7 +107,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557989,
             fullname="Белатриса",
             count_votes=173,
@@ -119,7 +119,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557990,
             fullname="Кирилл",
             count_votes=183,
@@ -131,7 +131,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557991,
             fullname="Анна",
             count_votes=1334,
@@ -143,7 +143,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
     )
     videos = await get_file_id()
     contestants.append(
-        Contenstant(
+        Contestant(
             telegram_id=361557992,
             fullname="Зульфия",
             count_votes=1334,
@@ -162,7 +162,7 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
         db_session.add(contestant)
 
 
-async def get_all_contestants(db_session: AsyncSession) -> list[Contenstant]:
-    query = select(Contenstant)
+async def get_all_contestants(db_session: AsyncSession) -> list[Contestant]:
+    query = select(Contestant)
     result = await db_session.execute(query)
     return list(result.scalars().all())

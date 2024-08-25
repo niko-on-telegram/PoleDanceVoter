@@ -3,11 +3,10 @@ from aiogram.enums import ParseMode
 from aiogram.types import FSInputFile
 from aiogram.client.default import DefaultBotProperties
 from sqlalchemy import Result, select
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncSession
 import os
 from config import settings
 from database.models import Contestant
-from database.tables_helper import create_or_drop_db
 
 bot = Bot(token=settings.BOT_TOKEN.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
@@ -31,7 +30,7 @@ async def get_file_id() -> list[str]:
     return files
 
 
-async def add_contestant_to_db(db_session, db: AsyncEngine):
+async def add_contestant_to_db(db_session):
     contestants = []
     videos = await get_file_id()
     contestants.append(
@@ -153,10 +152,6 @@ async def add_contestant_to_db(db_session, db: AsyncEngine):
             video_third=videos[2],
         )
     )
-
-    # TODO: пока что пересоздаем таблицу чтобы ошибки не было, переделать
-    await create_or_drop_db(db.engine, False)
-    await create_or_drop_db(db.engine)
 
     for contestant in contestants:
         db_session.add(contestant)

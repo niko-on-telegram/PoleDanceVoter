@@ -24,16 +24,19 @@ async def callback_check_answer(callback: types.CallbackQuery, db_session: Async
         caption=f'{user.fullname}, список участников:',
         reply_markup=get_contestant_list(contestants),
     )
+    await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
 async def callback_check_answer(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
     await callback.message.answer(text=f"Check answer {callback_data.tg_id}")
+    await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
     await callback.message.answer(text=f"Question {callback_data.tg_id}")
+    await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.VOTE))
@@ -45,6 +48,7 @@ async def callback_vote(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.fullname}?",
         reply_markup=voter_keyboard(contestant.telegram_id),
     )
+    await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
@@ -61,3 +65,4 @@ async def callback_profile(
         ],
     )
     await callback.message.answer(text=contestant.description, reply_markup=contestant_keyboard(callback_data.tg_id))
+    await callback.answer()

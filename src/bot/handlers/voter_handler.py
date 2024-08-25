@@ -13,6 +13,7 @@ router = Router()
 @router.callback_query(VoterCallbackFactory.filter(F.action == VoterEnum.VOTE))
 async def callback_check_answer(callback: types.CallbackQuery, callback_data: VoterCallbackFactory):
     await callback.message.answer(text=f"VOTE {callback_data.tg_id}")
+    await callback.answer("Спасибо за ваш голос!")
 
 
 @router.callback_query(VoterCallbackFactory.filter(F.action == VoterEnum.BACK))
@@ -22,3 +23,4 @@ async def callback_check_answer(
     await callback_profile(
         callback, ContestantCallbackFactory(tg_id=callback_data.tg_id, action=ContestantEnum.PROFILE), db_session
     )
+    await callback.answer()

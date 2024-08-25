@@ -14,5 +14,9 @@ def contestant_keyboard(tg_id: int) -> InlineKeyboardMarkup:
         text='Посмотреть ответы',
         callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.CHECK_ANSWER),
     )
+    kb.button(
+        text='К списку участников',
+        callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.BACK),
+    )
     kb.adjust(1)
     return kb.as_markup()

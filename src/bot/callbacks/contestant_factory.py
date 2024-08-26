@@ -3,5 +3,6 @@ from bot.enums import ContestantEnum
 
 
 class ContestantCallbackFactory(CallbackData, prefix="contestant"):
-    tg_id: int
+    user_id: int
+    contestant_id: int
     action: ContestantEnum

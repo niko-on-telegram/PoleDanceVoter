@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, MetaData, String, func
+from sqlalchemy import BigInteger, MetaData, String, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from config import settings
@@ -65,16 +65,15 @@ class Contestant(Base):
 
 class Voter(Base):
     __tablename__ = 'voter'
+    __table_args__ = (UniqueConstraint('user_id', 'contestant_id'),)
 
-    user_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
-    contestant_id: Mapped[int]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))
+    contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
     vote_state: Mapped[str]
 
     def __str__(self):
         return (
-            f"Voter(user_id={self.user_id}, "
-            f"contestant_id={self.contestant_id}, "
-            f"vote_state={self.vote_state}, "
+            f"Voter(user_id={self.user_id}, " f"contestant_id={self.contestant_id}, " f"vote_state={self.vote_state}, "
         )
 
     def __repr__(self):

@@ -17,25 +17,27 @@ router = Router()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.BACK))
-async def callback_check_answer(callback: types.CallbackQuery, db_session: AsyncSession, user: User):
+async def callback_back(
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, user: User
+):
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
         hello_img,
         caption=f'{user.fullname}, список участников:',
-        reply_markup=get_contestant_list(contestants),
+        reply_markup=get_contestant_list(contestants, callback_data.user_id),
     )
     await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
 async def callback_check_answer(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
-    await callback.message.answer(text=f"Check answer {callback_data.tg_id}")
+    await callback.message.answer(text=f"Check answer {callback_data.user_id}")
     await callback.answer()
 
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
-    await callback.message.answer(text=f"Question {callback_data.tg_id}")
+    await callback.message.answer(text=f"Question {callback_data.user_id}")
     await callback.answer()
 
 
@@ -43,10 +45,10 @@ async def callback_question(callback: types.CallbackQuery, callback_data: Contes
 async def callback_vote(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
 ):
-    contestant = await get_contestant_from_db(callback_data.tg_id, db_session)
+    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.fullname}?",
-        reply_markup=voter_keyboard(contestant.telegram_id),
+        reply_markup=voter_keyboard(user_id=callback_data.user_id, contestant_id=contestant.telegram_id),
     )
     await callback.answer()
 
@@ -55,7 +57,7 @@ async def callback_vote(
 async def callback_profile(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
 ):
-    contestant = await get_contestant_from_db(callback_data.tg_id, db_session)
+    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer_media_group(
         protect_content=True,
         media=[
@@ -64,5 +66,8 @@ async def callback_profile(
             InputMediaVideo(media=contestant.video_third),
         ],
     )
-    await callback.message.answer(text=contestant.description, reply_markup=contestant_keyboard(callback_data.tg_id))
+    await callback.message.answer(
+        text=contestant.description,
+        reply_markup=contestant_keyboard(user_id=callback_data.user_id, contestant_id=callback_data.contestant_id),
+    )
     await callback.answer()

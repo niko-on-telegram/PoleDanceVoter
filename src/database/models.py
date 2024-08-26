@@ -23,7 +23,7 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
-    count_votes: Mapped[int | None]
+    count_votes: Mapped[int]
 
     def __str__(self):
         return (
@@ -57,6 +57,24 @@ class Contestant(Base):
             f"video_second={self.video_second}), "
             f"video_third={self.video_third}), "
             f"description={self.description})"
+        )
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Voter(Base):
+    __tablename__ = 'voter'
+
+    user_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
+    contestant_id: Mapped[int]
+    vote_state: Mapped[str]
+
+    def __str__(self):
+        return (
+            f"Voter(user_id={self.user_id}, "
+            f"contestant_id={self.contestant_id}, "
+            f"vote_state={self.vote_state}, "
         )
 
     def __repr__(self):

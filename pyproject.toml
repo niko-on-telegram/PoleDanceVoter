@@ -29,7 +29,7 @@ requires-python = ">=3.11"
 [project.scripts]
 bot-run = "main:run_main"
 create-tables = "database.tables_helper:main"
-create-contestants = "database.contestant_table_helper:main"
+create-contestants = "data_pusher.contestants_push:main"
 
 [tool.black]
 line-length = 120

@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from bot.enums import ContestantEnum
 
 
@@ -15,4 +15,4 @@ def contestant_keyboard(tg_id: int) -> InlineKeyboardMarkup:
         callback_data=ContestantCallbackFactory(tg_id=tg_id, action=ContestantEnum.CHECK_ANSWER),
     )
     kb.adjust(1)
-    return kb.as_markup(resize_keyboard=True)
+    return kb.as_markup()

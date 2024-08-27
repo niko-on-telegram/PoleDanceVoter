@@ -3,7 +3,7 @@ from aiogram.types import InputMediaVideo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.contestant_choose import contestant_keyboard
-from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from magic_filter import F
 
 from bot.enums import ContestantEnum

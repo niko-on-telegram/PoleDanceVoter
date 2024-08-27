@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.models import Contestant
 from bot.enums import ContestantEnum
-from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
 
 
 def get_contestant_list(contestants: list[Contestant]) -> InlineKeyboardMarkup:
@@ -14,4 +14,4 @@ def get_contestant_list(contestants: list[Contestant]) -> InlineKeyboardMarkup:
             callback_data=ContestantCallbackFactory(tg_id=contestant.telegram_id, action=ContestantEnum.PROFILE),
         )
     kb.adjust(1)
-    return kb.as_markup(resize_keyboard=True)
+    return kb.as_markup()

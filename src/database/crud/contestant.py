@@ -22,7 +22,7 @@ async def get_file_id() -> list[str]:
     files = []
 
     path_to_videos = '/home/greed/work/'
-    for i in 1, 2, 3:
+    for i in range(3):
         img_path = os.path.join(path_to_videos, '111.mp4')
         message = await bot.send_video(settings.ADMIN, FSInputFile(img_path))
         print(f"Iter {i} path {img_path} id {message.video.file_id}")

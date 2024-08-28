@@ -1,9 +1,10 @@
-# TODO:
+#TODO:
 # 1. Check data_pusher.contestants_push for created contestants in db
 # 2. Check contestants crud
 # 3. Check user crud
 # 4. Check votes crud
 import pytest
+
 
 
 from database.crud.asset import (

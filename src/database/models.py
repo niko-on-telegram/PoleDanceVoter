@@ -63,7 +63,7 @@ class Contestant(Base):
         return self.__str__()
 
 
-class Voter(Base):
+class Votes(Base):
     __tablename__ = 'votes'
     __table_args__ = (UniqueConstraint('user_id', 'contestant_id'),)
 

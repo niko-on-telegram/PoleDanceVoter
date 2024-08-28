@@ -9,6 +9,6 @@ class ContestantEnum(IntEnum):
     BACK = auto()
 
 
-class VoterEnum(IntEnum):
+class VotesEnum(IntEnum):
     VOTE = auto()
     BACK = auto()

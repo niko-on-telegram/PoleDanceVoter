@@ -10,7 +10,7 @@ from bot.enums import ContestantEnum
 from database.models import User
 from bot.internal.hello_img import hello_img
 from bot.keyboards.contestant_list import get_contestant_list
-from bot.keyboards.voter_kb import voter_keyboard
+from bot.keyboards.votes_kb import votes_keyboard
 from database.crud.contestant import get_contestant_from_db, get_all_contestants
 
 router = Router()
@@ -48,7 +48,7 @@ async def callback_vote(
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.fullname}?",
-        reply_markup=voter_keyboard(user_id=callback_data.user_id, contestant_id=contestant.telegram_id),
+        reply_markup=votes_keyboard(user_id=callback_data.user_id, contestant_id=contestant.telegram_id),
     )
     await callback.answer()
 

@@ -64,7 +64,7 @@ class Contestant(Base):
 
 
 class Voter(Base):
-    __tablename__ = 'voter'
+    __tablename__ = 'votes'
     __table_args__ = (UniqueConstraint('user_id', 'contestant_id'),)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))

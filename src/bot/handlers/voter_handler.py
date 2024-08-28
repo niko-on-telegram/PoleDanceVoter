@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.enums import VoterEnum, ContestantEnum
 from bot.callbacks.voter_factory import VoterCallbackFactory
-from bot.callbacks.contestan_factory import ContestantCallbackFactory
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from bot.handlers.contestant_handler import callback_back as back_to_contestants, callback_profile
 from database.crud.contestant import inc_dec_vote_to_db as inc_dec_contestant_vote
 from database.crud.user import inc_dec_vote_to_db as inc_dec_user_vote, get_user_from_db_by_tg_id

@@ -5,7 +5,7 @@ from aiogram.types import URLInputFile
 from database.models import User
 
 from bot.keyboards.contestant_list import get_contestant_list
-from database.crud.contestant import get_all_contestants, add_contestant_to_db
+from database.crud.contestant import get_all_contestants
 
 router = Router()
 

@@ -37,16 +37,16 @@ class User(Base):
         return self.__str__()
 
 
-class Contenstant(Base):
+class Contestant(Base):
     __tablename__ = 'contestants'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     fullname: Mapped[str]
     count_votes: Mapped[int]
-    description: Mapped[str | None]
-    video_first: Mapped[str | None]
-    video_second: Mapped[str | None]
-    video_third: Mapped[str | None]
+    description: Mapped[str]
+    video_first: Mapped[str]
+    video_second: Mapped[str]
+    video_third: Mapped[str]
 
     def __str__(self):
         return (

@@ -9,6 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot.handlers.base_handlers import router as base_router
 from bot.handlers.errors_handler import router as errors_router
+from bot.handlers.contestant_handler import router as contestant_router
 from bot.internal.commands import set_bot_commands
 from bot.internal.notify_admin import on_shutdown_notify, on_startup_notify
 from bot.middlewares.auth_middleware import AuthMiddleware
@@ -40,7 +41,7 @@ async def main():
     dispatcher.startup.register(on_startup_notify)
     dispatcher.shutdown.register(on_shutdown_notify)
     dispatcher.startup.register(set_bot_commands)
-    dispatcher.include_routers(base_router, errors_router)
+    dispatcher.include_routers(base_router, errors_router, contestant_router)
     await dispatcher.start_polling(bot)
 
 

@@ -1,16 +1,17 @@
-from aiogram import types
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.models import Contenstant
+from database.models import Contestant
+from bot.enums import ContestantEnum
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
 
 
-def get_contestant_list(contestants: list[Contenstant]) -> InlineKeyboardMarkup:
+def get_contestant_list(contestants: list[Contestant]) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     for contestant in contestants:
-        kb.row(
-            types.InlineKeyboardButton(
-                text=f'{contestant.fullname}     Голоса: {contestant.count_votes}', url="https://github.com"
-            )
+        kb.button(
+            text=f'{contestant.fullname}     Голоса: {contestant.count_votes}',
+            callback_data=ContestantCallbackFactory(tg_id=contestant.telegram_id, action=ContestantEnum.PROFILE),
         )
-    return kb.as_markup(resize_keyboard=True)
+    kb.adjust(1)
+    return kb.as_markup()

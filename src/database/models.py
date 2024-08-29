@@ -36,6 +36,14 @@ class User(Base):
     def __repr__(self):
         return self.__str__()
 
+    def __eq__(self, other):
+        res = self.telegram_id == other.telegram_id
+        res = res and (self.fullname == other.fullname)
+        res = res and (self.count_votes == other.count_votes)
+        if self.username and other.username:
+            res = res and (self.username == other.username)
+        return res
+
 
 class Contestant(Base):
     __tablename__ = 'contestants'
@@ -51,7 +59,7 @@ class Contestant(Base):
     def __str__(self):
         return (
             f"Contestant(telegram_id={self.telegram_id}, "
-            f"name={self.fullname}, "
+            f"fullname={self.fullname}, "
             f"count_votes={self.count_votes}), "
             f"video_first={self.video_first}), "
             f"video_second={self.video_second}), "
@@ -61,6 +69,16 @@ class Contestant(Base):
 
     def __repr__(self):
         return self.__str__()
+
+    def __eq__(self, other):
+        res = self.telegram_id == other.telegram_id
+        res = res and (self.fullname == other.fullname)
+        res = res and (self.count_votes == other.count_votes)
+        res = res and (self.video_first == other.video_first)
+        res = res and (self.video_second == other.video_second)
+        res = res and (self.video_third == other.video_third)
+        res = res and (self.description == other.description)
+        return res
 
 
 class Votes(Base):
@@ -78,3 +96,9 @@ class Votes(Base):
 
     def __repr__(self):
         return self.__str__()
+
+    def __eq__(self, other):
+        res = self.user_id == other.user_id
+        res = res and (self.contestant_id == other.contestant_id)
+        res = res and (self.vote_state == other.vote_state)
+        return res

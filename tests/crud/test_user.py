@@ -18,6 +18,8 @@ async def test_check_get_user_from_db_by_tg_id_none(db):
     default_user = get_default_user()
     async with db.session_factory.begin() as db_session:
         await add_user_to_db(default_user, db_session)
+
+    async with db.session_factory() as db_session:
         user = await get_user_from_db_by_tg_id(empty_tg_id, db_session)
         assert user is None
 
@@ -27,6 +29,8 @@ async def test_check_get_user_from_db_by_tg_id_usrname(db):
     default_user = get_default_user_username()
     async with db.session_factory.begin() as db_session:
         await add_user_to_db(default_user, db_session)
+
+    async with db.session_factory() as db_session:
         user = await get_user_from_db_by_tg_id(default_user.telegram_id, db_session)
         assert default_user == user
 
@@ -36,6 +40,8 @@ async def test_check_get_user_from_db_by_tg_id(db):
     default_user = get_default_user()
     async with db.session_factory.begin() as db_session:
         await add_user_to_db(default_user, db_session)
+
+    async with db.session_factory() as db_session:
         user = await get_user_from_db_by_tg_id(default_user.telegram_id, db_session)
         assert default_user == user
 

@@ -1,10 +1,12 @@
 import asyncio
+import os
+
+import pytest
 import pytest_asyncio
 from testcontainers.postgres import PostgresContainer
 
 from database.database_connector import DatabaseConnector
-from database.models import Base
-from database.tables_helper import create_or_drop_db
+from database.models import Base, User
 
 
 @pytest_asyncio.fixture()
@@ -20,3 +22,8 @@ async def db(pytestconfig):
 
     await test_database.engine.dispose()
     postgres.stop()
+
+
+@pytest.fixture
+def default_user() -> User:
+    return User(telegram_id=361557983, fullname="Greed", count_votes=0)

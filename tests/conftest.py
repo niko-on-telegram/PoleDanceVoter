@@ -26,4 +26,4 @@ async def db(pytestconfig):
 
 @pytest.fixture
 def default_user() -> User:
-    return User(telegram_id=361557983, fullname="Greed", count_votes=0)
+    return User(telegram_id=361557982, fullname="Greed", count_votes=0)

@@ -3,13 +3,19 @@ from datetime import datetime
 from sqlalchemy import BigInteger, MetaData, String, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from config import settings
+_naming_convention: dict[str, str] = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_N_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
 
 
 class Base(DeclarativeBase):
     __abstract__ = True
     metadata = MetaData(
-        naming_convention=settings.naming_convention,
+        naming_convention=_naming_convention,
     )
     __table_args__ = {'extend_existing': True}
 
@@ -37,12 +43,12 @@ class User(Base):
         return self.__str__()
 
     def __eq__(self, other):
-        res = self.telegram_id == other.telegram_id
-        res = res and (self.fullname == other.fullname)
-        res = res and (self.count_votes == other.count_votes)
-        if self.username and other.username:
-            res = res and (self.username == other.username)
-        return res
+        return (
+            self.telegram_id == other.telegram_id
+            and self.fullname == other.fullname
+            and self.count_votes == other.count_votes
+            and self.username == other.username
+        )
 
 
 class Contestant(Base):
@@ -71,14 +77,15 @@ class Contestant(Base):
         return self.__str__()
 
     def __eq__(self, other):
-        res = self.telegram_id == other.telegram_id
-        res = res and (self.fullname == other.fullname)
-        res = res and (self.count_votes == other.count_votes)
-        res = res and (self.video_first == other.video_first)
-        res = res and (self.video_second == other.video_second)
-        res = res and (self.video_third == other.video_third)
-        res = res and (self.description == other.description)
-        return res
+        return (
+            self.telegram_id == other.telegram_id
+            and self.fullname == other.fullname
+            and self.count_votes == other.count_votes
+            and self.video_first == other.video_first
+            and self.video_second == other.video_second
+            and self.video_third == other.video_third
+            and self.description == other.description
+        )
 
 
 class Votes(Base):
@@ -98,7 +105,8 @@ class Votes(Base):
         return self.__str__()
 
     def __eq__(self, other):
-        res = self.user_id == other.user_id
-        res = res and (self.contestant_id == other.contestant_id)
-        res = res and (self.vote_state == other.vote_state)
-        return res
+        return (
+            self.user_id == other.user_id
+            and self.contestant_id == other.contestant_id
+            and self.vote_state == other.vote_state
+        )

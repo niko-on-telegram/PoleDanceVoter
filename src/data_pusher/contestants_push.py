@@ -161,5 +161,5 @@ async def default_list_contestants() -> list[Contestant]:
 
 
 def main():
-    db = get_db()
+    db = get_db(settings)
     asyncio.run(push_contestants(db))

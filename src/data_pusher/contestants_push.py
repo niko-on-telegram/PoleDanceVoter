@@ -22,11 +22,21 @@ async def push_contestants(db: DatabaseConnector):
 async def get_file_id() -> list[str]:
     files = []
     path_to_videos = '/home/greed/work/'
-    for i in range(3):
-        img_path = os.path.join(path_to_videos, '111.mp4')
-        message = await bot.send_video(settings.ADMIN, FSInputFile(img_path))
-        print(f"Iter {i} path {img_path} id {message.video.file_id}")
-        files.append(message.video.file_id)
+
+    img_path = os.path.join(path_to_videos, '111.mp4')
+    message = await bot.send_video(settings.ADMIN, FSInputFile(img_path))
+    print(f"Path {img_path} id {message.video.file_id}")
+    files.append(message.video.file_id)
+
+    img_path = os.path.join(path_to_videos, '222.mp4')
+    message = await bot.send_video(settings.ADMIN, FSInputFile(img_path))
+    print(f"Path {img_path} id {message.video.file_id}")
+    files.append(message.video.file_id)
+
+    img_path = os.path.join(path_to_videos, '333.mp4')
+    message = await bot.send_video(settings.ADMIN, FSInputFile(img_path))
+    print(f"Path {img_path} id {message.video.file_id}")
+    files.append(message.video.file_id)
     return files
 
 

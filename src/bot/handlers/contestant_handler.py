@@ -22,7 +22,7 @@ async def callback_back(
 ):
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
-        hello_img,
+        photo=hello_img,
         caption=f'{user.fullname}, список участников:',
         reply_markup=get_contestant_list(contestants, callback_data.user_id),
     )

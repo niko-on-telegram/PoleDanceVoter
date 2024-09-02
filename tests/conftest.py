@@ -48,10 +48,10 @@ def default_user_username() -> User:
 def default_user_list() -> list[User]:
     return [
         User(telegram_id=361557080, fullname="User1", count_votes=0),
-        User(telegram_id=361557081, fullname="User2", count_votes=0),
+        User(telegram_id=361557081, fullname="User2", count_votes=3),
         User(telegram_id=361557082, fullname="User3", count_votes=0),
         User(telegram_id=361557083, fullname="User4", count_votes=0),
-        User(telegram_id=361557084, fullname="User5", count_votes=0)
+        User(telegram_id=361557084, fullname="User5", count_votes=0),
     ]
 
 
@@ -59,10 +59,10 @@ def default_user_list() -> list[User]:
 def default_user_list_username() -> list[User]:
     return [
         User(telegram_id=361557080, fullname="User1", username="UserName1", count_votes=0),
-        User(telegram_id=361557081, fullname="User2", username="UserName1", count_votes=0),
+        User(telegram_id=361557081, fullname="User2", username="UserName1", count_votes=3),
         User(telegram_id=361557082, fullname="User3", username="UserName1", count_votes=0),
         User(telegram_id=361557083, fullname="User4", username="UserName1", count_votes=0),
-        User(telegram_id=361557084, fullname="User5", username="UserName1", count_votes=0)
+        User(telegram_id=361557084, fullname="User5", username="UserName1", count_votes=0),
     ]
 
 
@@ -239,4 +239,22 @@ def default_contestant_callback_factory_profile(default_user, default_contestant
         user_id=default_user.telegram_id,
         contestant_id=default_contestants_list[0].telegram_id,
         action=ContestantEnum.PROFILE,
+    )
+
+
+@pytest.fixture
+def default_votes_callback_factory_back(default_user, default_contestants_list) -> VotesCallbackFactory:
+    return VotesCallbackFactory(
+        user_id=default_user.telegram_id,
+        contestant_id=default_contestants_list[0].telegram_id,
+        action=VotesEnum.BACK,
+    )
+
+
+@pytest.fixture
+def default_votes_callback_factory_vote(default_user, default_contestants_list) -> VotesCallbackFactory:
+    return VotesCallbackFactory(
+        user_id=default_user.telegram_id,
+        contestant_id=default_contestants_list[0].telegram_id,
+        action=VotesEnum.VOTE,
     )

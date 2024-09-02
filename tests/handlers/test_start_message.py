@@ -8,14 +8,14 @@ from database.models import User
 
 
 @pytest.mark.asyncio
-async def test_start_handler(default_user: User, default_user_list, contestants_kb):
+async def test_start_handler(default_user: User, default_contestants_list, default_contestants_kb):
     message = AsyncMock()
     result = Mock()
-    result.scalars.return_value.all.return_value = default_user_list
+    result.scalars.return_value.all.return_value = default_contestants_list
     db_session = AsyncMock()
     db_session.execute.return_value = result
     await start_message(message, default_user, db_session)
     called_args, called_kwargs = message.answer_photo.call_args
     assert called_kwargs['photo'] == hello_img
     assert called_kwargs['caption'] == f'Hello, {default_user.fullname}. Список участников:'
-    assert called_kwargs['reply_markup'] == contestants_kb
+    assert called_kwargs['reply_markup'] == default_contestants_kb

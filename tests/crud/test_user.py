@@ -77,15 +77,15 @@ async def test_get_all_users_ids_list_username(db, default_user_list_username):
 
 
 @pytest.mark.asyncio
-async def test_get_all_users_ids_list(db, default_user_list):
+async def test_get_all_users_ids_list(db, default_contestants_list):
     async with db.session_factory.begin() as db_session:
-        for user in default_user_list:
+        for user in default_contestants_list:
             await add_user_to_db(user, db_session)
 
     async with db.session_factory() as db_session:
         users = await get_all_users_ids(db_session)
-        assert len(users) == len(default_user_list)
-        for user_list, db_user in zip(default_user_list, users):
+        assert len(users) == len(default_contestants_list)
+        for user_list, db_user in zip(default_contestants_list, users):
             assert db_user == user_list.telegram_id
 
 

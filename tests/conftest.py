@@ -3,8 +3,12 @@ import os
 
 import pytest
 import pytest_asyncio
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from testcontainers.postgres import PostgresContainer
 
+from bot.callbacks.contestant_factory import ContestantCallbackFactory
+from bot.enums import ContestantEnum
 from database.database_connector import DatabaseConnector
 from database.models import Base, User
 
@@ -25,8 +29,13 @@ async def db(pytestconfig):
 
 
 @pytest.fixture
+def empty_tg_id() -> int:
+    return 361557981
+
+
+@pytest.fixture
 def default_user() -> User:
-    return User(telegram_id=361557982, fullname="Greed", count_votes=0)
+    return User(telegram_id=361557982, fullname="Greed", count_votes=15)
 
 
 @pytest.fixture
@@ -54,3 +63,19 @@ def default_user_list_username() -> list[User]:
         User(telegram_id=361557986, fullname="User4", count_votes=3),
         User(telegram_id=361557987, fullname="User5", count_votes=4),
     ]
+
+
+@pytest.fixture
+def contestants_kb(default_user: User, default_user_list: list[User]) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    for num in range(len(default_user_list)):
+        kb.button(
+            text=f'{default_user_list[num].fullname}     Голоса: {default_user_list[num].count_votes}',
+            callback_data=ContestantCallbackFactory(
+                contestant_id=default_user_list[num].telegram_id,
+                user_id=default_user.telegram_id,
+                action=ContestantEnum.PROFILE,
+            ),
+        )
+    kb.adjust(1)
+    return kb.as_markup()

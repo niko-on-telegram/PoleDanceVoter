@@ -35,7 +35,7 @@ def empty_tg_id() -> int:
 
 @pytest.fixture
 def default_user() -> User:
-    return User(telegram_id=361557982, fullname="Greed", count_votes=15)
+    return User(telegram_id=361557982, fullname="Greed", count_votes=0)
 
 
 @pytest.fixture
@@ -44,9 +44,9 @@ def default_user_username() -> User:
 
 
 @pytest.fixture
-def default_user_list() -> list[User]:
+def default_user_list(default_user) -> list[User]:
     return [
-        User(telegram_id=361557982, fullname="User1", count_votes=0),
+        default_user,
         User(telegram_id=361557984, fullname="User2", count_votes=1),
         User(telegram_id=361557985, fullname="User3", count_votes=2),
         User(telegram_id=361557986, fullname="User4", count_votes=3),
@@ -55,9 +55,9 @@ def default_user_list() -> list[User]:
 
 
 @pytest.fixture
-def default_user_list_username() -> list[User]:
+def default_user_list_username(default_user_username) -> list[User]:
     return [
-        User(telegram_id=361557982, fullname="User1", count_votes=0),
+        default_user_username,
         User(telegram_id=361557984, fullname="User2", count_votes=1),
         User(telegram_id=361557985, fullname="User3", count_votes=2),
         User(telegram_id=361557986, fullname="User4", count_votes=3),

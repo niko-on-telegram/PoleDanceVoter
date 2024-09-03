@@ -7,6 +7,8 @@ from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from magic_filter import F
 
 from bot.enums import ContestantEnum
+from database.crud.user import get_user_from_db_by_tg_id
+from database.crud.votes import get_all_votes_ids
 from database.models import User
 from bot.internal.hello_img import hello_img
 from bot.keyboards.contestant_list import get_contestant_list
@@ -45,6 +47,17 @@ async def callback_question(callback: types.CallbackQuery, callback_data: Contes
 async def callback_vote(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
 ):
+    user = await get_user_from_db_by_tg_id(callback_data.user_id, db_session)
+    if user.count_votes >= 3:
+        await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
+        return
+
+    voters = await get_all_votes_ids(callback_data.user_id, db_session)
+    for voter in voters:
+        if voter.contestant_id == callback_data.contestant_id:
+            await callback.answer(text="Вы уже голосовали за этого участника!")
+            return
+
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",

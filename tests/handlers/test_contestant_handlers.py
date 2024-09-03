@@ -51,6 +51,7 @@ async def test_callback_profile(
     assert called_kwargs['reply_markup'] == default_contestant_keyboard
 
 
+#TODO: изменить тесты под изменившуюся логику
 @pytest.mark.asyncio
 async def test_callback_vote(
     default_contestants_list,

@@ -1,5 +1,6 @@
 from aiogram import Router, types
-from aiogram.types import InputMediaVideo
+from aiogram.methods import send_message
+from aiogram.types import InputMediaVideo, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.contestant_choose import contestant_keyboard, contestant_keyboard_ok
@@ -7,7 +8,7 @@ from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from magic_filter import F
 
 from bot.enums import ContestantEnum
-from database.crud.questions import get_all_questions
+from database.crud.questions import get_all_questions, add_question_to_db
 from database.crud.user import get_user_from_db_by_tg_id
 from database.crud.votes import get_all_votes_ids
 from database.models import User
@@ -106,5 +107,14 @@ async def callback_question(
 
 
 @router.message()
-async def get_message():
-    print("message")
+async def get_message(message: Message, db_session: AsyncSession):
+    if not message.text:
+        await message.answer("Вы ввели не текст! Введите только текст.")
+        return
+
+    #contestant_id = 1 #TODO получить id участника
+    #await add_question_to_db(contestant_id, message.from_user.id, message.text, db_session)
+    #TODO отправка участнику
+
+    await message.answer("Спасибо за вопрос!")
+

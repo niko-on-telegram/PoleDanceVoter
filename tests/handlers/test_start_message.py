@@ -17,5 +17,5 @@ async def test_start_handler(default_user: User, default_contestants_list, defau
     await start_message(message, default_user, db_session)
     called_args, called_kwargs = message.answer_photo.call_args
     assert called_kwargs['photo'] == hello_img
-    assert called_kwargs['caption'] == f'Hello, {default_user.fullname}. Список участников:'
+    assert called_kwargs['caption'] == f'Hello, {default_user.full_name}. Список участников:'
     assert called_kwargs['reply_markup'] == default_contestants_kb

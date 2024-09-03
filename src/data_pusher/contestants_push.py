@@ -51,7 +51,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557982,
-            fullname="Снежанна",
+            full_name="Снежанна",
             count_votes=13,
             description="Текст 1",
             video_first=videos[0],
@@ -63,7 +63,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557984,
-            fullname="Владислав",
+            full_name="Владислав",
             count_votes=143,
             description="Текст 2",
             video_first=videos[0],
@@ -75,7 +75,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557985,
-            fullname="Педро",
+            full_name="Педро",
             count_votes=1563,
             description="Текст 3",
             video_first=videos[0],
@@ -87,7 +87,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557986,
-            fullname="Анжелика",
+            full_name="Анжелика",
             count_votes=1653,
             description="Текст 4",
             video_first=videos[0],
@@ -99,7 +99,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557987,
-            fullname="Гоги",
+            full_name="Гоги",
             count_votes=16543,
             description="Текст 5",
             video_first=videos[0],
@@ -111,7 +111,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557988,
-            fullname="Рикардо",
+            full_name="Рикардо",
             count_votes=1342,
             description="Текст 6",
             video_first=videos[0],
@@ -123,7 +123,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557989,
-            fullname="Белатриса",
+            full_name="Белатриса",
             count_votes=173,
             description="Текст 7",
             video_first=videos[0],
@@ -135,7 +135,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557990,
-            fullname="Кирилл",
+            full_name="Кирилл",
             count_votes=183,
             description="Текст 8",
             video_first=videos[0],
@@ -147,7 +147,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557991,
-            fullname="Анна",
+            full_name="Анна",
             count_votes=1334,
             description="Текст 9",
             video_first=videos[0],
@@ -159,7 +159,7 @@ async def default_list_contestants() -> list[Contestant]:
     contestants.append(
         Contestant(
             telegram_id=361557992,
-            fullname="Зульфия",
+            full_name="Зульфия",
             count_votes=1334,
             description="Текст 10",
             video_first=videos[0],

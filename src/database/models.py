@@ -27,13 +27,13 @@ class User(Base):
     __tablename__ = 'users'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
-    fullname: Mapped[str]
+    full_name: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
     count_votes: Mapped[int]
 
     def __str__(self):
         return (
-            f"User(fullname={self.fullname}, "
+            f"User(full_name={self.full_name}, "
             f"telegram_id={self.telegram_id}, "
             f"username={self.username}, "
             f"count_votes={self.count_votes})"
@@ -45,7 +45,7 @@ class User(Base):
     def __eq__(self, other):
         return (
             self.telegram_id == other.telegram_id
-            and self.fullname == other.fullname
+            and self.full_name == other.full_name
             and self.count_votes == other.count_votes
             and self.username == other.username
         )
@@ -55,7 +55,7 @@ class Contestant(Base):
     __tablename__ = 'contestants'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
-    fullname: Mapped[str]
+    full_name: Mapped[str]
     count_votes: Mapped[int]
     description: Mapped[str]
     video_first: Mapped[str]
@@ -65,7 +65,7 @@ class Contestant(Base):
     def __str__(self):
         return (
             f"Contestant(telegram_id={self.telegram_id}, "
-            f"fullname={self.fullname}, "
+            f"full_name={self.full_name}, "
             f"count_votes={self.count_votes}), "
             f"video_first={self.video_first}), "
             f"video_second={self.video_second}), "
@@ -79,7 +79,7 @@ class Contestant(Base):
     def __eq__(self, other):
         return (
             self.telegram_id == other.telegram_id
-            and self.fullname == other.fullname
+            and self.full_name == other.full_name
             and self.count_votes == other.count_votes
             and self.video_first == other.video_first
             and self.video_second == other.video_second

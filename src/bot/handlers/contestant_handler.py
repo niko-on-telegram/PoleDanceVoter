@@ -23,7 +23,7 @@ async def callback_back(
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
         photo=hello_img,
-        caption=f'{user.fullname}, список участников:',
+        caption=f'{user.full_name}, список участников:',
         reply_markup=get_contestant_list(contestants, callback_data.user_id),
     )
     await callback.answer()
@@ -47,7 +47,7 @@ async def callback_vote(
 ):
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
-        text=f"Вы уверены что хотите проголосовать за участника {contestant.fullname}?",
+        text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
         reply_markup=votes_keyboard(user_id=callback_data.user_id, contestant_id=contestant.telegram_id),
     )
     await callback.answer()

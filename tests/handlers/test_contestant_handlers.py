@@ -22,7 +22,7 @@ async def test_callback_back(
     await callback_back(callback=callback, callback_data=callback_back_data, db_session=db_session, user=default_user)
     called_args, called_kwargs = callback.message.answer_photo.call_args
     assert called_kwargs['photo'] == hello_img
-    assert called_kwargs['caption'] == f'{default_user.fullname}, список участников:'
+    assert called_kwargs['caption'] == f'{default_user.full_name}, список участников:'
     assert called_kwargs['reply_markup'] == default_contestants_kb
 
 
@@ -70,6 +70,6 @@ async def test_callback_vote(
     called_args, called_kwargs = callback.message.answer.call_args
     assert (
         called_kwargs['text']
-        == f"Вы уверены что хотите проголосовать за участника {default_contestants_list[0].fullname}?"
+        == f"Вы уверены что хотите проголосовать за участника {default_contestants_list[0].full_name}?"
     )
     assert called_kwargs['reply_markup'] == default_vote_kb

@@ -26,6 +26,7 @@ async def callback_vote(callback: types.CallbackQuery, callback_data: VotesCallb
         await back_to_contestants(callback=callback, callback_data=fab, db_session=db_session, user=user)
         return
 
+    #TODO: скрывать участника, за которого проголосовали
     voters = await get_all_votes_ids(callback_data.user_id, db_session)
     for voter in voters:
         if voter.contestant_id == callback_data.contestant_id:

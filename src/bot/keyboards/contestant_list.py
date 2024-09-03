@@ -10,7 +10,7 @@ def get_contestant_list(contestants: list[Contestant], user_id: int) -> InlineKe
     kb = InlineKeyboardBuilder()
     for contestant in contestants:
         kb.button(
-            text=f'{contestant.fullname}     Голоса: {contestant.count_votes}',
+            text=f'{contestant.full_name}     Голоса: {contestant.count_votes}',
             callback_data=ContestantCallbackFactory(
                 contestant_id=contestant.telegram_id, user_id=user_id, action=ContestantEnum.PROFILE
             ),

@@ -15,6 +15,6 @@ async def start_message(message: types.Message, user: User, db_session) -> None:
     contestants = await get_all_contestants(db_session)
     await message.answer_photo(
         photo=hello_img,
-        caption=f'Hello, {user.fullname}. Список участников:',
+        caption=f'Hello, {user.full_name}. Список участников:',
         reply_markup=get_contestant_list(contestants, user.telegram_id),
     )

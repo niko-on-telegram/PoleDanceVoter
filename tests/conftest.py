@@ -36,33 +36,62 @@ def empty_tg_id() -> int:
 
 @pytest.fixture
 def default_user() -> User:
-    return User(telegram_id=361557980, fullname="Greed", count_votes=0)
+    return User(telegram_id=361557980, full_name="Greed", count_votes=0)
 
 
 @pytest.fixture
 def default_user_username() -> User:
-    return User(telegram_id=361557980, username="Uff", fullname="Greed", count_votes=0)
+    return User(telegram_id=361557980, username="Uff", full_name="Greed", count_votes=0)
+
+
+class AIOUser:
+    id: int
+    full_name: str
+    username: str
+    count_votes: 0
+
+    def __init__(self, id: int, full_name: str, username: str = "", count_votes: int = 0):
+        self.id = id
+        self.full_name = full_name
+        self.username = username
+        self.count_votes = count_votes
+
+
+@pytest.fixture
+def default_user_username_inp() -> AIOUser:
+    return AIOUser(id=361557080, full_name="User1", username="Name1", count_votes=0)
+
+
+@pytest.fixture
+def default_user_list_inp() -> list[AIOUser]:
+    return [
+        AIOUser(id=361557080, full_name="User1", username="Name1", count_votes=0),
+        AIOUser(id=361557081, full_name="User2", username="Name2", count_votes=3),
+        AIOUser(id=361557082, full_name="User3", username="Name3", count_votes=0),
+        AIOUser(id=361557083, full_name="User4", username="Name4", count_votes=0),
+        AIOUser(id=361557084, full_name="User5", username="Name5", count_votes=0),
+    ]
 
 
 @pytest.fixture
 def default_user_list() -> list[User]:
     return [
-        User(telegram_id=361557080, fullname="User1", count_votes=0),
-        User(telegram_id=361557081, fullname="User2", count_votes=3),
-        User(telegram_id=361557082, fullname="User3", count_votes=0),
-        User(telegram_id=361557083, fullname="User4", count_votes=0),
-        User(telegram_id=361557084, fullname="User5", count_votes=0),
+        User(telegram_id=361557080, full_name="User1", count_votes=0),
+        User(telegram_id=361557081, full_name="User2", count_votes=3),
+        User(telegram_id=361557082, full_name="User3", count_votes=0),
+        User(telegram_id=361557083, full_name="User4", count_votes=0),
+        User(telegram_id=361557084, full_name="User5", count_votes=0),
     ]
 
 
 @pytest.fixture
 def default_user_list_username() -> list[User]:
     return [
-        User(telegram_id=361557080, fullname="User1", username="UserName1", count_votes=0),
-        User(telegram_id=361557081, fullname="User2", username="UserName1", count_votes=3),
-        User(telegram_id=361557082, fullname="User3", username="UserName1", count_votes=0),
-        User(telegram_id=361557083, fullname="User4", username="UserName1", count_votes=0),
-        User(telegram_id=361557084, fullname="User5", username="UserName1", count_votes=0),
+        User(telegram_id=361557080, full_name="User1", username="UserName1", count_votes=0),
+        User(telegram_id=361557081, full_name="User2", username="UserName1", count_votes=3),
+        User(telegram_id=361557082, full_name="User3", username="UserName1", count_votes=0),
+        User(telegram_id=361557083, full_name="User4", username="UserName1", count_votes=0),
+        User(telegram_id=361557084, full_name="User5", username="UserName1", count_votes=0),
     ]
 
 
@@ -71,7 +100,7 @@ def default_contestants_list(default_user) -> list[Contestant]:
     return [
         Contestant(
             telegram_id=361557982,
-            fullname="Contestnat1",
+            full_name="Contestnat1",
             count_votes=0,
             description="description1",
             video_first="video1",
@@ -80,7 +109,7 @@ def default_contestants_list(default_user) -> list[Contestant]:
         ),
         Contestant(
             telegram_id=361557984,
-            fullname="Contestnat2",
+            full_name="Contestnat2",
             count_votes=1,
             description="description2",
             video_first="video1",
@@ -89,7 +118,7 @@ def default_contestants_list(default_user) -> list[Contestant]:
         ),
         Contestant(
             telegram_id=361557985,
-            fullname="Contestnat3",
+            full_name="Contestnat3",
             count_votes=2,
             description="description3",
             video_first="video1",
@@ -98,7 +127,7 @@ def default_contestants_list(default_user) -> list[Contestant]:
         ),
         Contestant(
             telegram_id=361557986,
-            fullname="Contestnat4",
+            full_name="Contestnat4",
             count_votes=3,
             description="description4",
             video_first="video1",
@@ -107,7 +136,7 @@ def default_contestants_list(default_user) -> list[Contestant]:
         ),
         Contestant(
             telegram_id=361557987,
-            fullname="Contestnat5",
+            full_name="Contestnat5",
             count_votes=4,
             description="description5",
             video_first="video1",
@@ -161,7 +190,7 @@ def default_contestants_kb(default_user: User, default_contestants_list) -> Inli
     kb = InlineKeyboardBuilder()
     for num in range(len(default_contestants_list)):
         kb.button(
-            text=f'{default_contestants_list[num].fullname}     Голоса: {default_contestants_list[num].count_votes}',
+            text=f'{default_contestants_list[num].full_name}     Голоса: {default_contestants_list[num].count_votes}',
             callback_data=ContestantCallbackFactory(
                 contestant_id=default_contestants_list[num].telegram_id,
                 user_id=default_user.telegram_id,

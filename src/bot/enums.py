@@ -7,6 +7,7 @@ class ContestantEnum(IntEnum):
     QUESTION = auto()
     CHECK_ANSWER = auto()
     BACK = auto()
+    DELETE = auto()
 
 
 class VotesEnum(IntEnum):

@@ -2,11 +2,12 @@ from aiogram import Router, types
 from aiogram.types import InputMediaVideo
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.keyboards.contestant_choose import contestant_keyboard
+from bot.keyboards.contestant_choose import contestant_keyboard, contestant_keyboard_ok
 from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from magic_filter import F
 
 from bot.enums import ContestantEnum
+from database.crud.questions import get_all_questions
 from database.crud.user import get_user_from_db_by_tg_id
 from database.crud.votes import get_all_votes_ids
 from database.models import User
@@ -18,9 +19,14 @@ from database.crud.contestant import get_contestant_from_db, get_all_contestants
 router = Router()
 
 
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
+async def callback_delete(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.BACK))
 async def callback_back(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, user: User
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, user: User
 ):
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
@@ -31,21 +37,9 @@ async def callback_back(
     await callback.answer()
 
 
-@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
-async def callback_check_answer(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
-    await callback.message.answer(text=f"Check answer {callback_data.user_id}")
-    await callback.answer()
-
-
-@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
-async def callback_question(callback: types.CallbackQuery, callback_data: ContestantCallbackFactory):
-    await callback.message.answer(text=f"Question {callback_data.user_id}")
-    await callback.answer()
-
-
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.VOTE))
 async def callback_vote(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
 ):
     user = await get_user_from_db_by_tg_id(callback_data.user_id, db_session)
     if user.count_votes >= 3:
@@ -68,7 +62,7 @@ async def callback_vote(
 
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
 ):
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer_media_group(
@@ -84,3 +78,33 @@ async def callback_profile(
         reply_markup=contestant_keyboard(user_id=callback_data.user_id, contestant_id=callback_data.contestant_id),
     )
     await callback.answer()
+
+
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
+async def callback_check_answer(
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+):
+    questions = await get_all_questions(callback_data.contestant_id, db_session)
+    question_txt = ""
+    for question in questions:
+        question_txt += f"- {question}\n\n"
+
+    await callback.message.answer(
+        text=question_txt,
+        reply_markup=contestant_keyboard_ok(user_id=callback_data.user_id, contestant_id=callback_data.contestant_id),
+    )
+    await callback.answer()
+
+
+@router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
+async def callback_question(
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+):
+    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
+    await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name} в сообщение. Только текст.")
+    await callback.answer()
+
+
+@router.message()
+async def get_message():
+    print("message")

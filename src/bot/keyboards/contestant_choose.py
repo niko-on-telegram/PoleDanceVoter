@@ -32,3 +32,14 @@ def contestant_keyboard(user_id: int, contestant_id: int) -> InlineKeyboardMarku
     )
     kb.adjust(1)
     return kb.as_markup()
+
+
+def contestant_keyboard_ok(user_id: int, contestant_id: int) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(
+        text='Закрыть',
+        callback_data=ContestantCallbackFactory(
+            user_id=user_id, contestant_id=contestant_id, action=ContestantEnum.DELETE
+        ),
+    )
+    return kb.as_markup()

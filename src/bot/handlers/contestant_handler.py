@@ -111,7 +111,8 @@ async def callback_check_answer(
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
 
     questions = await get_all_questions(callback_data.contestant_id, db_session)
-    question_txt = ""
+    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
+    question_txt = f"Вопросы для {contestant.full_name}:\n\n"
     for question in questions:
         question_txt += f"- {question}\n\n"
 

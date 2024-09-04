@@ -30,6 +30,7 @@ async def callback_vote(callback: types.CallbackQuery, callback_data: VotesCallb
 
 @router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
 async def callback_back(callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession):
+    await callback.message.delete()
     await callback_profile(
         callback,
         ContestantCallbackFactory(

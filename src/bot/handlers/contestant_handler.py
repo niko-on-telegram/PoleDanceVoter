@@ -117,4 +117,3 @@ async def get_message(message: Message, db_session: AsyncSession):
     #TODO отправка участнику
 
     await message.answer("Спасибо за вопрос!")
-

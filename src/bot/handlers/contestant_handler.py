@@ -35,6 +35,7 @@ async def callback_back(
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video2_id)
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
+
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
         photo=hello_img,
@@ -94,7 +95,7 @@ async def callback_profile(
             video1_id=message_list[0].message_id,
             video2_id=message_list[1].message_id,
             video3_id=message_list[2].message_id,
-            chat_id=message_list[0].chat.id
+            chat_id=message_list[0].chat.id,
         ),
     )
     await callback.answer()

@@ -112,9 +112,12 @@ async def callback_check_answer(
 
     questions = await get_all_questions(callback_data.contestant_id, db_session)
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
-    question_txt = f"Вопросы для {contestant.full_name}:\n\n"
-    for question in questions:
-        question_txt += f"- {question}\n\n"
+    if not questions:
+        question_txt = f"Участнику {contestant.full_name} ещё не задали вопросов..."
+    else:
+        question_txt = f"Вопросы для {contestant.full_name}:\n\n"
+        for question in questions:
+            question_txt += f"- {question}\n\n"
 
     await callback.message.answer(
         text=question_txt,

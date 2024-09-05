@@ -112,7 +112,7 @@ class Questions(Base):
     contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
     question: Mapped[str | None]
     answer: Mapped[str | None]
-    state: QuestionState
+    state: Mapped[int]
 
     def __str__(self):
         return (

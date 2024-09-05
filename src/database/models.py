@@ -3,6 +3,8 @@ from datetime import datetime
 from sqlalchemy import BigInteger, MetaData, String, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from bot.enums import QuestionState
+
 
 class Base(DeclarativeBase):
     __abstract__ = True
@@ -110,6 +112,7 @@ class Questions(Base):
     contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
     question: Mapped[str | None]
     answer: Mapped[str | None]
+    state: QuestionState
 
     def __str__(self):
         return (
@@ -118,6 +121,7 @@ class Questions(Base):
             f"contestant_id={self.contestant_id}, "
             f"question={self.question}, "
             f"answer={self.answer}, "
+            f"state={self.state}, "
         )
 
     def __repr__(self):
@@ -130,4 +134,5 @@ class Questions(Base):
             and self.contestant_id == other.contestant_id
             and self.question == other.question
             and self.answer == other.answer
+            and self.state == other.state
         )

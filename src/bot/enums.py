@@ -13,3 +13,11 @@ class ContestantEnum(IntEnum):
 class VotesEnum(IntEnum):
     VOTE = auto()
     BACK = auto()
+
+
+class QuestionState(IntEnum):
+    QUESTION = auto()
+    MODERATION = auto()
+    WAITING_RESPONSE = auto()
+    REJECTED = auto()
+    ANSWERED = auto()

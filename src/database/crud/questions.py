@@ -10,15 +10,17 @@ async def get_all_questions(contestant_id: int, db_session: AsyncSession) -> lis
     result = await db_session.execute(query)
     questions = result.scalars().all()
     list_questions = list()
-    for it in questions: #Берем только вопросы с ответами и выделяем вопрос жирным
-        if it.answer:
+    for it in questions:  # Берем только вопросы с ответами и выделяем вопрос жирным
+        if it.state == QuestionState.ANSWERED:
             list_questions.append(f"<b>{it.question}</b>")
             list_questions.append(it.answer)
     return list_questions
 
 
-async def add_question_to_db(contestant_id: int, user_id: int, question: str, db_session: AsyncSession):
-    new_question = Questions(contestant_id=contestant_id, user_id=user_id, question=question)
+async def add_question_to_db(
+    contestant_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession
+):
+    new_question = Questions(contestant_id=contestant_id, user_id=user_id, question=question, state=state)
     db_session.add(new_question)
     await db_session.flush()
 

@@ -146,12 +146,10 @@ async def get_message(message: Message, db_session: AsyncSession):
         await message.answer("Вы ввели не текст! Введите только текст.")
         return
 
-    # contestant_id = 1 #TODO получить id участника
-    # await add_question_to_db(contestant_id, message.from_user.id, message.text, db_session)
-    # TODO отправка участнику
+    # await add_question_to_db(contestant_id, message.from_user.id, message.text, QuestionState.Question, db_session)
 
     await message.answer("Спасибо за вопрос!")
-    await callback_profile()
+    #await print_profile(contestant_id, message.message_id, db_session)
 
 
 # async def print_profile(contestant_id: int, last_message: int, db_session: AsyncSession):

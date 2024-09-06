@@ -1,4 +1,5 @@
 import asyncio
+from config import settings
 
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -15,7 +16,7 @@ async def create_or_drop_db(engine: AsyncEngine, create: bool = True):
 
 
 def main():
-    db = get_db()
+    db = get_db(settings)
     asyncio.run(create_or_drop_db(db.engine))
 
 

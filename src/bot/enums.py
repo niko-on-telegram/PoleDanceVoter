@@ -6,3 +6,9 @@ class ContestantEnum(IntEnum):
     VOTE = auto()
     QUESTION = auto()
     CHECK_ANSWER = auto()
+    BACK = auto()
+
+
+class VotesEnum(IntEnum):
+    VOTE = auto()
+    BACK = auto()

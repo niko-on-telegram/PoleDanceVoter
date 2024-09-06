@@ -7,7 +7,7 @@ name = "PoleDanceVoter"
 description = ""
 version = "0.0.1"
 authors = [
-    { name = "vasgg", email = "vas.g@me.com" },
+    { name = "greed", email = "kolobrod1994@gmail.com" },
 ]
 license = { text = "MIT" }
 classifiers = [

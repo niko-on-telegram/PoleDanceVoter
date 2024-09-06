@@ -18,14 +18,6 @@ class Settings(BaseSettings):
     def postgres_db_url(self) -> str:
         return f'postgresql+asyncpg://{self.DBUSER}:{self.DBPASS.get_secret_value()}@{self.DBHOST}/{self.DBNAME}'
 
-    naming_convention: dict[str, str] = {
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_N_name)s",
-        "ck": "ck_%(table_name)s_%(constraint_name)s",
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-        "pk": "pk_%(table_name)s",
-    }
-
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', case_sensitive=False)
 
 

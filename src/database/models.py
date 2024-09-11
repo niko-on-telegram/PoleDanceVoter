@@ -104,7 +104,7 @@ class Votes(Base):
         )
 
 
-class Questions(Base):
+class Question(Base):
     __tablename__ = 'questions'
 
     id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, primary_key=True)

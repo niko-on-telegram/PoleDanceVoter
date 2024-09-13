@@ -12,6 +12,8 @@ from bot.handlers.errors_handler import router as errors_router
 from bot.handlers.contestant_handler import router as contestant_router
 from bot.handlers.votes_handler import router as voter_router
 from bot.handlers.question_handler import router as question_router
+from bot.handlers.moderator_handler import router as moderator_router
+from bot.handlers.contestant_question_handler import router as contestant_question_router
 from bot.internal.commands import set_bot_commands
 from bot.internal.notify_admin import on_shutdown_notify, on_startup_notify
 from bot.middlewares.auth_middleware import AuthMiddleware
@@ -43,7 +45,15 @@ async def main():
     dispatcher.startup.register(on_startup_notify)
     dispatcher.shutdown.register(on_shutdown_notify)
     dispatcher.startup.register(set_bot_commands)
-    dispatcher.include_routers(base_router, errors_router, contestant_router, voter_router, question_router)
+    dispatcher.include_routers(
+        base_router,
+        errors_router,
+        contestant_router,
+        voter_router,
+        question_router,
+        moderator_router,
+        contestant_question_router,
+    )
     await dispatcher.start_polling(bot)
 
 

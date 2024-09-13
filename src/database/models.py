@@ -3,8 +3,6 @@ from datetime import datetime
 from sqlalchemy import BigInteger, MetaData, String, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from bot.enums import QuestionState
-
 
 class Base(DeclarativeBase):
     __abstract__ = True

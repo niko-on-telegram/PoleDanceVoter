@@ -1,5 +1,6 @@
 from aiogram import Router, types
-from aiogram.types import InputMediaVideo, Message
+from aiogram.fsm.context import FSMContext
+from aiogram.types import InputMediaVideo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.contestant_profile_callback import ContestantProfileCallbackFactory
@@ -128,7 +129,11 @@ async def callback_check_answer(
 
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(
-    callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession
+    callback: types.CallbackQuery,
+    callback_data: ContestantProfileCallbackFactory,
+    db_session: AsyncSession,
+    user: User,
+    state: FSMContext,
 ):
     await callback.message.delete()
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
@@ -136,5 +141,10 @@ async def callback_question(
     await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
 
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
-    await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name} в сообщение. Только текст.")
+    msg = await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name} в сообщение. Только текст.")
+
+    data = await state.get_data()
+    messages = data.get("message_for_delete", [])
+    messages.append(msg.id)
+    await state.update_data(message_for_delete=messages, user_id=user.telegram_id, contestant_id=contestant.telegram_id)
     await callback.answer()

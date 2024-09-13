@@ -15,4 +15,4 @@ def votes_keyboard(user_id: int, contestant_id: int) -> InlineKeyboardMarkup:
         callback_data=VotesCallbackFactory(user_id=user_id, contestant_id=contestant_id, action=VotesEnum.BACK),
     )
     kb.adjust(1)
-    return kb.as_markup(resize_keyboard=True)
+    return kb.as_markup()

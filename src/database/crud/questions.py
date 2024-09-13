@@ -41,3 +41,10 @@ async def get_state(question_id: int, db_session: AsyncSession) -> QuestionState
     result: Result = await db_session.execute(query)
     question = result.scalar()
     return question.state
+
+
+async def get_question(question_id: int, db_session: AsyncSession) -> Question:
+    query = select(Question).filter(Question.id == question_id)
+    result: Result = await db_session.execute(query)
+    question = result.scalar()
+    return question

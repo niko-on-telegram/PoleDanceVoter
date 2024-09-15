@@ -16,6 +16,7 @@ from database.crud.questions import add_question_to_db, update_state
 router = Router()
 
 
+# TODO: не работает. Нажатие кнопки выдает unhadle
 @router.message(QuestionBackCallback.filter(F.action == QuestionBack.BACK))
 async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
     # get data for question object

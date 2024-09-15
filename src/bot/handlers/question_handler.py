@@ -16,6 +16,29 @@ from database.crud.questions import add_question_to_db, update_state
 router = Router()
 
 
+@router.message(QuestionBackCallback.filter(F.action == QuestionBack.BACK))
+async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
+    # get data for question object
+    data = await state.get_data()
+    contestant_id = data.get("contestant_id", 0)
+    user_id = data.get("user_id", 0)
+    if not user_id or not contestant_id:
+        return
+
+    await message.delete()
+
+    # delete messages
+    messages = data.get("message_for_delete", [])
+    await state.update_data(message_for_delete=[])
+    for msg in messages:
+        await bot.delete_message(chat_id=user_id, message_id=msg)
+
+    # out from state
+    await state.clear()
+    # print profile contestant
+    await print_profile(contestant_id, user_id, db_session, bot)
+
+
 @router.message(StatesBot.INPUT_QUESTION, F.text)
 async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
     # get data for question object
@@ -88,26 +111,3 @@ async def get_any_message(message: Message, state: FSMContext):
     messages.append(message.message_id)
     await state.update_data(message_for_delete=messages)
     return
-
-
-@router.message(QuestionBackCallback.filter(F.action == QuestionBack.BACK))
-async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
-    # get data for question object
-    data = await state.get_data()
-    contestant_id = data.get("contestant_id", 0)
-    user_id = data.get("user_id", 0)
-    if not user_id or not contestant_id:
-        return
-
-    await message.delete()
-
-    # delete messages
-    messages = data.get("message_for_delete", [])
-    await state.update_data(message_for_delete=[])
-    for msg in messages:
-        await bot.delete_message(chat_id=user_id, message_id=msg)
-
-    # out from state
-    await state.clear()
-    # print profile contestant
-    await print_profile(contestant_id, user_id, db_session, bot)

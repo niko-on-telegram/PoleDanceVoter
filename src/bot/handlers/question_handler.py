@@ -3,14 +3,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaVideo
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.enums import QuestionState
+from bot.callbacks.question_back import QuestionBackCallback
+from bot.enums import QuestionState, QuestionBack
 from bot.keyboards.contestant_choose import contestant_keyboard
-from bot.keyboards.contestant_question_kb import question_error_keyboard
+from bot.keyboards.contestant_question_kb import question_error_user_keyboard
 from bot.keyboards.moderation_kb import moderation_keyboard
 from bot.states import StatesBot
 from config import settings
 from database.crud.contestant import get_contestant_from_db
-from database.crud.questions import add_question_to_db, add_answer_to_db, update_state
+from database.crud.questions import add_question_to_db, update_state
 
 router = Router()
 
@@ -39,9 +40,9 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     messages = data.get("message_for_delete", [])
     await state.update_data(message_for_delete=[], question_id=question_id)
     for msg in messages:
-        await bot.delete_message(chat_id=by_msg.chat_id, message_id=msg)
+        await bot.delete_message(chat_id=by_msg.chat.id, message_id=msg)
 
-    await bot.delete_message(chat_id=by_msg.chat_id, message_id=by_msg.message_id)
+    await bot.delete_message(chat_id=by_msg.chat.id, message_id=by_msg.message_id)
 
     # send question to moderator
     await update_state(question_id=question_id, state=QuestionState.MODERATION, db_session=db_session)
@@ -80,37 +81,16 @@ async def print_profile(contestant_id: int, user_id: int, db_session: AsyncSessi
 @router.message(StatesBot.INPUT_QUESTION)
 async def get_any_message(message: Message, state: FSMContext):
     data = await state.get_data()
-    question_id = await data.get("question_id")
-    msg = await message.answer(
-        "Вы ввели не текст! Введите только текст.", reply_markup=question_error_keyboard(question_id=question_id)
-    )
+    msg = await message.answer("Вы ввели не текст! Введите только текст.", reply_markup=question_error_user_keyboard())
     messages = data.get("message_for_delete", [])
-    messages.append(msg.id)
-    messages.append(message.id)
+    messages.append(msg.message_id)
+    messages.append(message.message_id)
     await state.update_data(message_for_delete=messages)
     return
 
 
-@router.message(StatesBot.ANSWER_QUESTION)
-async def get_any_message(message: Message, state: FSMContext):
-    data = await state.get_data()
-    question_id = await data.get("question_id")
-    msg = await message.answer(
-        "Вы ввели не текст! Ответ должен состоять из текста. Введите ответ еще раз:",
-        reply_markup=question_error_keyboard(question_id=question_id),
-    )
-    messages = data.get("message_for_delete", [])
-    messages.append(msg.id)
-    messages.append(message.id)
-    await state.update_data(message_for_delete=messages)
-    return
-
-
-@router.message(StatesBot.ANSWER_QUESTION, F.text)
+@router.message(QuestionBackCallback.filter(F.action == QuestionBack.BACK))
 async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
-    # TODO: вроде как тут нет qusetion_id и user_id на этом этапе. Нажл исправить это дело
-    # например через question_id получить
-
     # get data for question object
     data = await state.get_data()
     contestant_id = data.get("contestant_id", 0)
@@ -118,22 +98,16 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     if not user_id or not contestant_id:
         return
 
-    question_id = await data.get("question_id")
-    await add_answer_to_db(question_id=question_id, db_session=db_session, answer=message.text)
-    await update_state(question_id=question_id, state=QuestionState.ANSWERED, db_session=db_session)
-
-    by_msg = await message.answer("Спасибо за ответ!")
+    await message.delete()
 
     # delete messages
     messages = data.get("message_for_delete", [])
     await state.update_data(message_for_delete=[])
     for msg in messages:
-        await bot.delete_message(chat_id=by_msg.chat_id, message_id=msg)
-
-    await bot.delete_message(chat_id=by_msg.chat_id, message_id=by_msg.message_id)
-
-    # print profile contestant
-    await print_profile(contestant_id, user_id, db_session, bot)
+        await bot.delete_message(chat_id=user_id, message_id=msg)
 
     # out from state
     await state.clear()
+    # print profile contestant
+    await print_profile(contestant_id, user_id, db_session, bot)
+

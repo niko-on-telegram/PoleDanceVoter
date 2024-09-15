@@ -50,8 +50,8 @@ async def default_list_contestants() -> list[Contestant]:
     videos = await get_file_id()
     contestants.append(
         Contestant(
-            telegram_id=361557982,
-            full_name="Снежанна",
+            telegram_id=settings.MODERATOR,
+            full_name="ТестМодераторУчастник",
             count_votes=13,
             description="Текст 1",
             video_first=videos[0],

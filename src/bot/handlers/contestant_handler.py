@@ -146,10 +146,7 @@ async def callback_question(
 
     data = await state.get_data()
     messages = data.get("message_for_delete", [])
-    messages.append(msg.id)
+    messages.append(msg.message_id)
     await state.update_data(message_for_delete=messages, user_id=user.telegram_id, contestant_id=contestant.telegram_id)
     await callback.answer()
     await state.set_state(StatesBot.INPUT_QUESTION)
-
-
-# Перейти в состояние

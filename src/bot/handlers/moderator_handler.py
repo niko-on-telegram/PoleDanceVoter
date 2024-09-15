@@ -1,4 +1,5 @@
 from aiogram import Router, F, types, Bot
+from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.moderation_factory import ModerationCallbackFactory
@@ -11,7 +12,7 @@ router = Router()
 
 @router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
-    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory, db_session: AsyncSession, bot: Bot
+    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory,  state: FSMContext, db_session: AsyncSession, bot: Bot
 ):
     await callback.message.delete()
 
@@ -22,15 +23,17 @@ async def waiting_response_callback(
     await update_state(
         question_id=callback_data.question_id, state=QuestionState.WAITING_RESPONSE, db_session=db_session
     )
+    await state.clear()
     await callback.answer("Вопрос согласован")
 
 
 @router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.MODERATION_REJECT))
 async def reject_callback(
-    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory, db_session: AsyncSession
+    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory,  state: FSMContext, db_session: AsyncSession
 ):
     await callback.message.delete()
     await update_state(
         question_id=callback_data.question_id, state=QuestionState.MODERATION_REJECT, db_session=db_session
     )
+    await state.clear()
     await callback.answer("Вопрос отклонён")

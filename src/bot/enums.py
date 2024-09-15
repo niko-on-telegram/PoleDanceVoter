@@ -22,3 +22,7 @@ class QuestionState(IntEnum):
     WAITING_RESPONSE = auto()
     REJECTED = auto()
     ANSWERED = auto()
+
+
+class QuestionBack(IntEnum):
+    BACK = auto()

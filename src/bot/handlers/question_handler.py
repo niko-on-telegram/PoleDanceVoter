@@ -43,6 +43,7 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
         await bot.delete_message(chat_id=by_msg.chat.id, message_id=msg)
 
     await bot.delete_message(chat_id=by_msg.chat.id, message_id=by_msg.message_id)
+    await message.delete()
 
     # send question to moderator
     await update_state(question_id=question_id, state=QuestionState.MODERATION, db_session=db_session)
@@ -110,4 +111,3 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     await state.clear()
     # print profile contestant
     await print_profile(contestant_id, user_id, db_session, bot)
-

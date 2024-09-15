@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.contestant_question_factory import ContestantQuestionCallbackFactory
 from bot.enums import QuestionState
+from bot.handlers.contestant_handler import callback_back
 from bot.handlers.question_handler import print_profile
 from bot.keyboards.contestant_question_kb import question_keyboard, question_error_keyboard
 from bot.states import StatesBot
@@ -13,28 +14,37 @@ from database.crud.questions import update_state, get_question, add_answer_to_db
 router = Router()
 
 
-@router.callback_query(ContestantQuestionCallbackFactory.filter(F.action == QuestionState.WAITING_RESPONSE))
+@router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
-    callback: types.CallbackQuery, bot: Bot, state: FSMContext, db_session: AsyncSession
+    callback: types.CallbackQuery,
+    callback_data: ContestantQuestionCallbackFactory,
+    bot: Bot,
+    state: FSMContext,
+    db_session: AsyncSession,
 ):
-    chat_id = callback.message.chat_id
+    chat_id = callback.message.chat.id
     await callback.message.delete()
     data = await state.get_data()
-    question_id = await data.get("question_id")
+    question_id = callback_data.question_id
     msg = await bot.send_message(
         chat_id=chat_id,
         text="Введите ответ на вопрос текстом:",
         reply_markup=question_keyboard(question_id=question_id),
     )
     messages = data.get("message_for_delete", [])
-    messages.append(msg.id)
+    messages.append(msg.message_id)
     question = await get_question(question_id=question_id, db_session=db_session)
-    await state.update_data(message_for_delete=messages, contestant_id=question.contestant_id, user_id=question.user_id)
+    await state.update_data(
+        message_for_delete=messages,
+        contestant_id=question.contestant_id,
+        user_id=question.user_id,
+        question_id=question_id,
+    )
     await state.set_state(StatesBot.ANSWER_QUESTION)
 
 
 # Перейти в состоянеи ожидания сообщения
-@router.callback_query(ContestantQuestionCallbackFactory.filter(F.action == QuestionState.REJECTED))
+@router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.REJECTED))
 async def reject_callback(
     callback: types.CallbackQuery,
     callback_data: ContestantQuestionCallbackFactory,
@@ -56,8 +66,8 @@ async def get_any_message(message: Message, state: FSMContext):
         reply_markup=question_error_keyboard(question_id=question_id),
     )
     messages = data.get("message_for_delete", [])
-    messages.append(msg.id)
-    messages.append(message.id)
+    messages.append(msg.message_id)
+    messages.append(message.message_id)
     await state.update_data(message_for_delete=messages)
     return
 

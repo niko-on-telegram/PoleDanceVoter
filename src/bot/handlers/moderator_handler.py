@@ -10,9 +10,13 @@ from database.crud.questions import update_state, get_question
 router = Router()
 
 
-@router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.WAITING_RESPONSE))
+@router.callback_query(ModerationCallbackFactory.filter(F.state == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
-    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory,  state: FSMContext, db_session: AsyncSession, bot: Bot
+    callback: types.CallbackQuery,
+    callback_data: ModerationCallbackFactory,
+    state: FSMContext,
+    db_session: AsyncSession,
+    bot: Bot,
 ):
     await callback.message.delete()
 
@@ -27,9 +31,9 @@ async def waiting_response_callback(
     await callback.answer("Вопрос согласован")
 
 
-@router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.MODERATION_REJECT))
+@router.callback_query(ModerationCallbackFactory.filter(F.state == QuestionState.MODERATION_REJECT))
 async def reject_callback(
-    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory,  state: FSMContext, db_session: AsyncSession
+    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory, state: FSMContext, db_session: AsyncSession
 ):
     await callback.message.delete()
     await update_state(

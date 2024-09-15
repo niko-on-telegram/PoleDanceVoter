@@ -25,10 +25,12 @@ async def waiting_response_callback(
     await callback.answer("Вопрос согласован")
 
 
-@router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.REJECTED))
+@router.callback_query(ModerationCallbackFactory.filter(F.action == QuestionState.MODERATION_REJECT))
 async def reject_callback(
     callback: types.CallbackQuery, callback_data: ModerationCallbackFactory, db_session: AsyncSession
 ):
     await callback.message.delete()
-    await update_state(question_id=callback_data.question_id, state=QuestionState.REJECTED, db_session=db_session)
+    await update_state(
+        question_id=callback_data.question_id, state=QuestionState.MODERATION_REJECT, db_session=db_session
+    )
     await callback.answer("Вопрос отклонён")

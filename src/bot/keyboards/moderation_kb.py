@@ -13,7 +13,7 @@ def moderation_keyboard(question_id: int) -> InlineKeyboardMarkup:
     )
     kb.button(
         text="Отклонить",
-        callback_data=ModerationCallbackFactory(question_id=question_id, state=QuestionState.REJECTED),
+        callback_data=ModerationCallbackFactory(question_id=question_id, state=QuestionState.MODERATION_REJECT),
     )
     kb.adjust(1)
     return kb.as_markup()

@@ -18,6 +18,7 @@ class VotesEnum(IntEnum):
 class QuestionState(IntEnum):
     QUESTION = auto()
     MODERATION = auto()
+    MODERATION_REJECT = auto()
     WAITING_RESPONSE = auto()
     REJECTED = auto()
     ANSWERED = auto()

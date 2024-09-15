@@ -9,6 +9,7 @@ from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from magic_filter import F
 
 from bot.enums import ContestantEnum
+from bot.states import StatesBot
 from database.crud.questions import get_all_questions
 from database.crud.user import get_user_from_db_by_tg_id
 from database.crud.votes import get_all_votes_ids
@@ -148,3 +149,7 @@ async def callback_question(
     messages.append(msg.id)
     await state.update_data(message_for_delete=messages, user_id=user.telegram_id, contestant_id=contestant.telegram_id)
     await callback.answer()
+    await state.set_state(StatesBot.INPUT_QUESTION)
+
+
+# Перейти в состояние

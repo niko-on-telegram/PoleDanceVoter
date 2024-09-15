@@ -7,7 +7,7 @@ from bot.callbacks.votes_factory import VotesCallbackFactory
 from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from bot.handlers.contestant_handler import callback_profile
 from database.crud.contestant import inc_dec_vote_to_db as inc_dec_contestant_vote
-from database.crud.user import inc_dec_vote_to_db as inc_dec_user_vote, get_user_from_db_by_tg_id
+from database.crud.user import inc_dec_vote_to_db as inc_dec_user_vote
 from database.crud.votes import add_votes_to_db
 
 router = Router()

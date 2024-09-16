@@ -22,7 +22,7 @@ def question_keyboard(
     return kb.as_markup()
 
 
-def question_error_keyboard(question_id: int) -> InlineKeyboardMarkup:
+def question_reject_keyboard(question_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="Отклонить вопрос",

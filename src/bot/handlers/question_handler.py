@@ -4,7 +4,7 @@ from aiogram.types import Message, InputMediaVideo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.question_back import QuestionBackCallback
-from bot.enums import QuestionState, QuestionBack
+from bot.enums import QuestionState
 from bot.keyboards.contestant_choose import contestant_keyboard
 from bot.keyboards.contestant_question_kb import question_error_user_keyboard
 from bot.keyboards.moderation_kb import moderation_keyboard
@@ -16,17 +16,14 @@ from database.crud.questions import add_question_to_db, update_state
 router = Router()
 
 
-# TODO: не работает. Нажатие кнопки выдает unhadle
-@router.message(QuestionBackCallback.filter(F.action == QuestionBack.BACK))
-async def get_message(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
+@router.callback_query(QuestionBackCallback.filter())
+async def get_message(state: FSMContext, db_session: AsyncSession, bot: Bot):
     # get data for question object
     data = await state.get_data()
     contestant_id = data.get("contestant_id", 0)
     user_id = data.get("user_id", 0)
     if not user_id or not contestant_id:
         return
-
-    await message.delete()
 
     # delete messages
     messages = data.get("message_for_delete", [])

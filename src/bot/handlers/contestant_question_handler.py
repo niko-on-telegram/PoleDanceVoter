@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.contestant_question_factory import ContestantQuestionCallbackFactory
 from bot.enums import QuestionState
-from bot.keyboards.contestant_question_kb import  question_error_keyboard
+from bot.keyboards.contestant_question_kb import  question_reject_keyboard
 from bot.states import StatesBot
 from database.crud.questions import update_state, get_question, add_answer_to_db
 
@@ -29,7 +29,7 @@ async def waiting_response_callback(
     msg = await bot.send_message(
         chat_id=chat_id,
         text=f"Введите ответ на вопрос \"{question.question}\"текстом:",
-        reply_markup=question_error_keyboard(question_id=question_id),
+        reply_markup=question_reject_keyboard(question_id=question_id),
     )
     messages_list = data.get("message_for_delete", [])
     messages_list.append(msg.message_id)
@@ -96,7 +96,7 @@ async def get_any_message(message: Message, state: FSMContext):
     question_id = data.get("question_id")
     msg = await message.answer(
         "Вы ввели не текст! Ответ должен состоять из текста. Введите ответ еще раз:",
-        reply_markup=question_error_keyboard(question_id=question_id),
+        reply_markup=question_reject_keyboard(question_id=question_id),
     )
     messages_list = data.get("message_for_delete", [])
     messages_list.append(msg.message_id)

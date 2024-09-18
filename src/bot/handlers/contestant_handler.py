@@ -22,6 +22,19 @@ from database.crud.contestant import get_contestant_from_db, get_all_contestants
 router = Router()
 
 
+async def delete_message_video(
+    callback: types.CallbackQuery,
+    chat_id: int,
+    video1_id: int,
+    video2_id: int,
+    video3_id: int,
+):
+    await callback.message.delete()
+    await callback.bot.delete_message(chat_id=chat_id, message_id=video1_id)
+    await callback.bot.delete_message(chat_id=chat_id, message_id=video2_id)
+    await callback.bot.delete_message(chat_id=chat_id, message_id=video3_id)
+
+
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
 async def callback_delete(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, user: User
@@ -33,10 +46,13 @@ async def callback_delete(
 async def callback_back(
     callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession, user: User
 ):
-    await callback.message.delete()
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video2_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
+    await delete_message_video(
+        callback=callback,
+        chat_id=callback_data.chat_id,
+        video1_id=callback_data.video1_id,
+        video2_id=callback_data.video2_id,
+        video3_id=callback_data.video3_id,
+    )
 
     contestants = await get_all_contestants(db_session)
     await callback.message.answer_photo(
@@ -62,10 +78,13 @@ async def callback_vote(
             await callback.answer(text="Вы уже голосовали за этого участника!")
             return
 
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video2_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
-    await callback.message.delete()
+    await delete_message_video(
+        callback=callback,
+        chat_id=callback_data.chat_id,
+        video1_id=callback_data.video1_id,
+        video2_id=callback_data.video2_id,
+        video3_id=callback_data.video3_id,
+    )
 
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
@@ -107,10 +126,14 @@ async def callback_profile(
 async def callback_check_answer(
     callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession
 ):
-    await callback.message.delete()
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video2_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
+
+    await delete_message_video(
+        callback=callback,
+        chat_id=callback_data.chat_id,
+        video1_id=callback_data.video1_id,
+        video2_id=callback_data.video2_id,
+        video3_id=callback_data.video3_id,
+    )
 
     questions = await get_all_questions(callback_data.contestant_id, db_session)
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
@@ -136,10 +159,14 @@ async def callback_question(
     user: User,
     state: FSMContext,
 ):
-    await callback.message.delete()
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video1_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video2_id)
-    await callback.bot.delete_message(chat_id=callback_data.chat_id, message_id=callback_data.video3_id)
+
+    await delete_message_video(
+        callback=callback,
+        chat_id=callback_data.chat_id,
+        video1_id=callback_data.video1_id,
+        video2_id=callback_data.video2_id,
+        video3_id=callback_data.video3_id,
+    )
 
     contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
     msg = await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name} в сообщение. Только текст.")

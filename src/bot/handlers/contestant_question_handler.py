@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.callbacks.contestant_question_factory import ContestantQuestionCallbackFactory
 from bot.enums import QuestionState
-from bot.keyboards.contestant_question_kb import  question_reject_keyboard
+from bot.keyboards.contestant_question_kb import question_reject_keyboard
 from bot.states import StatesBot
 from database.crud.questions import update_state, get_question, add_answer_to_db
 
@@ -57,7 +57,6 @@ async def reject_callback(
     await state.update_data(message_for_delete=[])
     for msg in messages_list:
         await bot.delete_message(chat_id=callback.message.chat.id, message_id=msg)
-
 
     await update_state(question_id=callback_data.question_id, state=QuestionState.REJECTED, db_session=db_session)
     await callback.answer("Вопрос отклонён")

@@ -16,8 +16,9 @@ from database.crud.questions import add_question_to_db, update_state
 router = Router()
 
 
+# Без параметра message падает
 @router.callback_query(QuestionBackCallback.filter())
-async def get_message(state: FSMContext, db_session: AsyncSession, bot: Bot):
+async def callback_question(message: Message, state: FSMContext, db_session: AsyncSession, bot: Bot):
     # get data for question object
     data = await state.get_data()
     contestant_id = data.get("contestant_id", 0)

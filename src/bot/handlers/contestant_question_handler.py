@@ -28,7 +28,7 @@ async def waiting_response_callback(
 
     msg = await bot.send_message(
         chat_id=chat_id,
-        text=f"Введите ответ на вопрос \"{question.question}\"текстом:",
+        text=f"Введите ответ на вопрос \"{question.question}\" текстом: ",
         reply_markup=question_reject_keyboard(question_id=question_id),
     )
     messages_list = data.get("message_for_delete", [])
@@ -75,7 +75,9 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     await add_answer_to_db(question_id=question_id, db_session=db_session, answer=message.text)
     await update_state(question_id=question_id, state=QuestionState.ANSWERED, db_session=db_session)
 
-    by_msg = await message.answer("Спасибо за ответ!")
+    question = await get_question(question_id=question_id, db_session=db_session)
+
+    by_msg = await message.answer(f"Спасибо за ответ на вопрос {question.question}")
 
     # delete messages
     messages_list = data.get("message_for_delete", [])
@@ -83,7 +85,6 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     for msg in messages_list:
         await bot.delete_message(chat_id=by_msg.chat.id, message_id=msg)
 
-    await bot.delete_message(chat_id=by_msg.chat.id, message_id=by_msg.message_id)
     await message.delete()
     # out from state
     await state.clear()

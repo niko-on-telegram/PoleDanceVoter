@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     BOT_TOKEN: SecretStr
     ADMIN: int
+    MODERATOR: int
     DBPASS: SecretStr
     DBNAME: str
     DBUSER: str

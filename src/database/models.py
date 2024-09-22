@@ -100,3 +100,37 @@ class Votes(Base):
             and self.contestant_id == other.contestant_id
             and self.vote_state == other.vote_state
         )
+
+
+class Question(Base):
+    __tablename__ = 'questions'
+
+    id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))
+    contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
+    question: Mapped[str | None]
+    answer: Mapped[str | None]
+    state: Mapped[int]
+
+    def __str__(self):
+        return (
+            f"Questions(id={self.id}, user_id={self.user_id}, "
+            f"user_id={self.user_id}, "
+            f"contestant_id={self.contestant_id}, "
+            f"question={self.question}, "
+            f"answer={self.answer}, "
+            f"state={self.state}, "
+        )
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return (
+            self.id == other.id
+            and self.user_id == other.user_id
+            and self.contestant_id == other.contestant_id
+            and self.question == other.question
+            and self.answer == other.answer
+            and self.state == other.state
+        )

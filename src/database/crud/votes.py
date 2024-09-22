@@ -1,11 +1,11 @@
-from sqlalchemy import Result, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Votes
 
 
 async def get_all_votes_ids(user_id: int, db_session: AsyncSession) -> list[Votes]:
-    query = select(Votes)
+    query = select(Votes).filter(Votes.user_id == user_id)
     result = await db_session.execute(query)
     return list(result.scalars().all())
 

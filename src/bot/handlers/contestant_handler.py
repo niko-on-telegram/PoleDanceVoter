@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Router, types
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from magic_filter import F
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,9 +23,12 @@ router = Router()
 
 
 async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_list: list[int]):
-    for msg_id in msg_list:
-        logging.debug(f"{chat_id=} {msg_id=}")
-        await callback.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+    try:
+        for msg_id in msg_list:
+            logging.debug(f"{chat_id=} {msg_id=}")
+            await callback.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete video messages for user {chat_id}")
 
 
 # noinspection PyTypeChecker

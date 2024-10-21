@@ -23,9 +23,9 @@ async def print_profile(message: Message, contestant_id: int, db_session: AsyncS
     msg_list.extend(message.message_id for message in messages)
     message = await message.answer(contestant.info)
     msg_list.append(message.message_id)
-    message = await message.answer_video(contestant.presentation)
+    message = await message.answer_video(contestant.presentation, protect_content=True)
     msg_list.append(message.message_id)
-    message = await message.answer_video(contestant.dance_cut)
+    message = await message.answer_video(contestant.dance_cut, protect_content=True)
     msg_list.append(message.message_id)
 
     already_voted = False
@@ -36,7 +36,7 @@ async def print_profile(message: Message, contestant_id: int, db_session: AsyncS
 
     reply_markup = contestant_keyboard(contestant_id, already_voted)
 
-    message = await message.answer_video(contestant.dance_uncut, reply_markup=reply_markup)
+    message = await message.answer_video(contestant.dance_uncut, reply_markup=reply_markup, protect_content=True)
     msg_list.append(message.message_id)
 
     logging.debug(f"{message.chat.id=} {msg_list=}")

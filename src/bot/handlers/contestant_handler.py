@@ -1,144 +1,96 @@
+import logging
+
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InputMediaVideo
+from magic_filter import F
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.callbacks.contestant_profile_callback import ContestantProfileCallbackFactory
-from bot.keyboards.contestant_choose import contestant_keyboard, contestant_keyboard_ok
 from bot.callbacks.contestant_factory import ContestantCallbackFactory
-from magic_filter import F
-
+from bot.callbacks.contestant_profile_callback import ContestantProfileCallbackFactory
 from bot.enums import ContestantEnum
+from bot.helpers import print_constestant_list, print_profile
+from bot.keyboards.close_kb import close_keyboard
+from bot.keyboards.contestant_choose import contestant_keyboard_ok
+from bot.keyboards.votes_kb import votes_keyboard
 from bot.states import StatesBot
+from database.crud.contestant import get_competitor_from_db
 from database.crud.questions import get_all_questions
-from database.crud.user import get_user_from_db_by_tg_id
 from database.crud.votes import get_all_votes_ids
 from database.models import User
-from bot.internal.hello_img import hello_img
-from bot.keyboards.contestant_list import get_contestant_list
-from bot.keyboards.votes_kb import votes_keyboard
-from database.crud.contestant import get_contestant_from_db, get_all_contestants
 
 router = Router()
 
 
-async def delete_message_video(
-    callback: types.CallbackQuery,
-    chat_id: int,
-    video1_id: int,
-    video2_id: int,
-    video3_id: int,
-):
-    await callback.message.delete()
-    await callback.bot.delete_message(chat_id=chat_id, message_id=video1_id)
-    await callback.bot.delete_message(chat_id=chat_id, message_id=video2_id)
-    await callback.bot.delete_message(chat_id=chat_id, message_id=video3_id)
+async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_list: list[int]):
+    for msg_id in msg_list:
+        logging.debug(f"{chat_id=} {msg_id=}")
+        await callback.bot.delete_message(chat_id=chat_id, message_id=msg_id)
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
 async def callback_delete(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, user: User
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
 ):
-    await callback_profile(callback, callback_data, db_session)
+    await callback.message.delete()
 
 
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.BACK))
-async def callback_back(
-    callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession, user: User
-):
-    await delete_message_video(
-        callback=callback,
-        chat_id=callback_data.chat_id,
-        video1_id=callback_data.video1_id,
-        video2_id=callback_data.video2_id,
-        video3_id=callback_data.video3_id,
-    )
+async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession, user: User, state: FSMContext):
+    data = await state.get_data()
+    msg_ids = data.get('msg_ids', [])
+    await delete_message_video(callback=callback, chat_id=callback.from_user.id, msg_list=msg_ids)
 
-    contestants = await get_all_contestants(db_session)
-    await callback.message.answer_photo(
-        photo=hello_img,
-        caption=f'{user.full_name}, список участников:',
-        reply_markup=get_contestant_list(contestants, callback_data.user_id),
-    )
-    await callback.answer()
+    await print_constestant_list(message=callback.message, db_session=db_session)
+    await state.clear()
 
 
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
 async def callback_vote(
-    callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession
+    callback: types.CallbackQuery,
+    callback_data: ContestantProfileCallbackFactory,
+    db_session: AsyncSession,
+    user: User,
 ):
-    user = await get_user_from_db_by_tg_id(callback_data.user_id, db_session)
     if user.count_votes >= 3:
         await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
         return
 
-    voters = await get_all_votes_ids(callback_data.user_id, db_session)
+    voters = await get_all_votes_ids(user.telegram_id, db_session)
     for voter in voters:
-        if voter.contestant_id == callback_data.contestant_id:
+        if voter.competitor_id == callback_data.contestant_id:
             await callback.answer(text="Вы уже голосовали за этого участника!")
             return
 
-    await delete_message_video(
-        callback=callback,
-        chat_id=callback_data.chat_id,
-        video1_id=callback_data.video1_id,
-        video2_id=callback_data.video2_id,
-        video3_id=callback_data.video3_id,
-    )
-
-    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
+    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
     await callback.message.answer(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
-        reply_markup=votes_keyboard(user_id=callback_data.user_id, contestant_id=contestant.telegram_id),
+        reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
     )
     await callback.answer()
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
 ):
     await callback.message.delete()
-    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
-    message_list = await callback.message.answer_media_group(
-        protect_content=True,
-        media=[
-            InputMediaVideo(media=contestant.video_first),
-            InputMediaVideo(media=contestant.video_second),
-            InputMediaVideo(media=contestant.video_third),
-        ],
-    )
-    await callback.message.answer(
-        text=contestant.description,
-        reply_markup=contestant_keyboard(
-            user_id=callback_data.user_id,
-            contestant_id=callback_data.contestant_id,
-            video1_id=message_list[0].message_id,
-            video2_id=message_list[1].message_id,
-            video3_id=message_list[2].message_id,
-            chat_id=message_list[0].chat.id,
-        ),
-    )
-    await callback.answer()
+    await print_profile(callback.message, callback_data.contestant_id, db_session, state)
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
 async def callback_check_answer(
-    callback: types.CallbackQuery, callback_data: ContestantProfileCallbackFactory, db_session: AsyncSession
+    callback: types.CallbackQuery,
+    callback_data: ContestantProfileCallbackFactory,
+    db_session: AsyncSession,
+    state: FSMContext,
 ):
-
-    await delete_message_video(
-        callback=callback,
-        chat_id=callback_data.chat_id,
-        video1_id=callback_data.video1_id,
-        video2_id=callback_data.video2_id,
-        video3_id=callback_data.video3_id,
-    )
-
     questions = await get_all_questions(callback_data.contestant_id, db_session)
-    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
+    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
     if not questions:
-        question_txt = f"Участнику {contestant.full_name} ещё не задали вопросов..."
+        question_txt = f"Участнику {contestant.full_name} ещё не задали вопросов."
     else:
         question_txt = f"Вопросы для {contestant.full_name}:\n\n"
         for question in questions:
@@ -146,11 +98,12 @@ async def callback_check_answer(
 
     await callback.message.answer(
         text=question_txt,
-        reply_markup=contestant_keyboard_ok(user_id=callback_data.user_id, contestant_id=callback_data.contestant_id),
+        reply_markup=contestant_keyboard_ok(contestant_id=callback_data.contestant_id),
     )
     await callback.answer()
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(
     callback: types.CallbackQuery,
@@ -159,17 +112,8 @@ async def callback_question(
     user: User,
     state: FSMContext,
 ):
-
-    await delete_message_video(
-        callback=callback,
-        chat_id=callback_data.chat_id,
-        video1_id=callback_data.video1_id,
-        video2_id=callback_data.video2_id,
-        video3_id=callback_data.video3_id,
-    )
-
-    contestant = await get_contestant_from_db(callback_data.contestant_id, db_session)
-    msg = await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name} в сообщение. Только текст.")
+    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+    msg = await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard())
 
     data = await state.get_data()
     messages = data.get("message_for_delete", [])

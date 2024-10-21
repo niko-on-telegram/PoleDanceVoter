@@ -24,7 +24,7 @@ async def add_user_to_db(user, db_session) -> User:
 async def get_user_from_db_by_tg_id(telegram_id: int, db_session: AsyncSession) -> User | None:
     query = select(User).filter(User.telegram_id == telegram_id)
     result: Result = await db_session.execute(query)
-    user = result.scalar()
+    user = result.scalar_one_or_none()
     return user
 
 

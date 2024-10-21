@@ -1,5 +1,5 @@
 import json
-import os.path
+import logging
 from pathlib import Path
 import shutil
 
@@ -7,27 +7,40 @@ i = -1
 video_names = ['presentation.mp4', 'video_cut.mp4', 'video_uncut.mp4']
 photo_i = 0
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s: " "%(filename)s: " "%(levelname)s: " "%(funcName)s(): " "%(lineno)d:\t" "%(message)s",
+)
+
 
 def suggest_filename(name: str) -> str:
     name = name.lower()
     if name.startswith('img_') and name.endswith('.png'):
         counter4img = name[4:8]
         counter4img = int(counter4img)
-        if 7000 < counter_img < 7200:
+        if 7000 < counter4img < 7200:
             return 'afisha.PNG'
     if name.endswith('.mp4') or name.endswith('.mov'):
         global i
         i += 1
         i %= 3
         return video_names[i]
-    if name.endswith('.jpg'):
+    global photo_i
+    if name.endswith('.jpg') or name.endswith('.jpeg'):
+        photo_i += 1
         return f"photo{photo_i}.jpg"
+    if name.endswith('.heic'):
+        photo_i += 1
+        return f"photo{photo_i}.heic"
+    if name.endswith('.png'):
+        photo_i += 1
+        return f"photo{photo_i}.png"
     assert False, name
 
 
-pt = "/home/vasg/Downloads/ChatExport_2024-10-20/result.json"
-base_path = "/home/vasg/Downloads/ChatExport_2024-10-20/"
-target_dir = "/home/vasg/pyprojects/telegram_bots/PoleDanceVoter/data/competitors_data"
+pt = "/home/gridgain/Downloads/Telegram Desktop/ChatExport_2024-10-20/result.json"
+base_path = "/home/gridgain/Downloads/Telegram Desktop/ChatExport_2024-10-20"
+target_dir = "/home/gridgain/PycharmProjects/PoleDanceVoter/data/competitors_data"
 
 with open(pt) as f:
     data = json.load(f)
@@ -69,9 +82,14 @@ for item in group_by_cont.values():
     for file in item['files']:
         src_file = Path(base_path) / file
         if src_file.name.startswith('безым'):
+            logging.info(f"Skipping {src_file=}")
+            continue
+        if src_file.name.endswith('.ogg'):
+            logging.info(f"Skipping {src_file}")
             continue
         dst_filename = suggest_filename(src_file.name)
 
         dst_file = dst / dst_filename
         print(f"Copying from {src_file=} to {dst_file=}")
+        assert not dst_file.exists()
         shutil.copy(src_file, dst_file)

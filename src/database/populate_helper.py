@@ -16,7 +16,7 @@ from config import settings
 from database.database_connector import get_db
 from database.models import Competitor, Resource
 
-session = AiohttpSession(timeout=1000, api=TelegramAPIServer.from_base('http://localhost:8081'))
+session = AiohttpSession(timeout=1200, api=TelegramAPIServer.from_base('http://localhost:8081'))
 bot = Bot(
     token=settings.BOT_TOKEN.get_secret_value(),
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
@@ -59,6 +59,7 @@ async def folder_walker():
     logging.info(f"{competitors=}")
 
     for competitor in competitors:
+        logging.info(f"{competitor=}")
         new_competitor = dict()
         new_competitor['photos'] = []
         for subdir, dirs, files in os.walk(main_folder / competitor):
@@ -97,6 +98,8 @@ async def folder_walker():
                         info = ''.join(lines[1:]).strip()
                         new_competitor['full_name'] = full_name
                         new_competitor['info'] = info
+                    case _:
+                        raise RuntimeError(f"Unexpected file {competitor=} {file=}")
         new_competitor['photos'] = ', '.join(new_competitor['photos'])
         db = get_db(settings)
         async with db.session_factory.begin() as db_session:

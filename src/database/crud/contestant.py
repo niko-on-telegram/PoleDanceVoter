@@ -21,7 +21,7 @@ async def get_competitor_from_db(tg_id: int, db_session) -> Competitor:
 
 
 async def get_all_contestants(db_session: AsyncSession) -> list[Competitor]:
-    query = select(Competitor)
+    query = select(Competitor).order_by(Competitor.id)
     result = await db_session.execute(query)
     return list(result.scalars().all())
 

@@ -80,6 +80,7 @@ async def callback_profile(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
 ):
     await callback.message.delete()
+    await print_profile(callback.message, callback_data.contestant_id, db_session, state)
 
 
 # noinspection PyTypeChecker

@@ -79,7 +79,10 @@ async def callback_vote(
 async def callback_profile(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
 ):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message {callback.message.message_id}")
     await print_profile(callback.message, callback_data.contestant_id, db_session, state)
 
 

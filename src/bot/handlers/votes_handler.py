@@ -33,11 +33,12 @@ async def callback_vote(
 
 
 @router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
-async def callback_back(callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession):
+async def callback_back(callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
+                        state: FSMContext):
     await callback_profile(
         callback,
         ContestantCallbackFactory(contestant_id=callback_data.contestant_id, action=ContestantEnum.PROFILE),
-        db_session,
+        db_session, state
     )
     await callback.answer()
 

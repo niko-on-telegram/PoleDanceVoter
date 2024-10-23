@@ -10,6 +10,7 @@ from bot.enums import QuestionState
 from bot.keyboards.moderation_kb import moderation_keyboard
 from bot.states import StatesBot
 from config import settings
+from database.crud.contestant import get_competitor_from_db
 from database.crud.questions import add_question_to_db, update_state
 
 router = Router()
@@ -20,7 +21,7 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     # get data for question object
     data = await state.get_data()
     competitor_id = data.get("contestant_id", 0)
-    user_id = data.get("user_id", 0)
+    user_id = message.from_user.id
 
     messages_list = data.get("message_for_delete", [])
     for msg in messages_list:
@@ -41,11 +42,16 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
 
     by_msg = await message.answer("Спасибо за вопрос!")
 
+    competitor = await get_competitor_from_db(competitor_id, db_session)
+
+    question_header = f"Вопрос от {message.from_user.mention_markdown()} для {competitor.full_name}:"
+    question = f"{question_header}\n\n{message.text}"
+
     await message.delete()
 
     # send question to moderator
     await update_state(question_id=question_id, state=QuestionState.MODERATION, db_session=db_session)
-    await bot.send_message(chat_id=settings.MODERATOR, text=message.text, reply_markup=moderation_keyboard(question_id))
+    await bot.send_message(chat_id=settings.MODERATOR, text=question, reply_markup=moderation_keyboard(question_id))
     # out of state
     await state.set_state()
 

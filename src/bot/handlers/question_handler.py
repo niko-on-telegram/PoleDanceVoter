@@ -44,7 +44,7 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
 
     competitor = await get_competitor_from_db(competitor_id, db_session)
 
-    question_header = f"Вопрос от {message.from_user.mention_markdown()} для {competitor.full_name}:"
+    question_header = f"Вопрос от {message.from_user.mention_html()} для {competitor.full_name}:"
     question = f"{question_header}\n\n{message.text}"
 
     await message.delete()

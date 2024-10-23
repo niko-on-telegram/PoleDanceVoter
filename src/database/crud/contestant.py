@@ -1,26 +1,32 @@
 from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.models import Contestant
+from database.models import Competitor, Resource
 from sqlalchemy import update
 
 
 async def inc_dec_vote_to_db(tg_id: int, db_session: AsyncSession, inc: bool = True):
-    query = select(Contestant).filter(Contestant.telegram_id == tg_id)
+    query = select(Competitor).filter(Competitor.telegram_id == tg_id)
     result: Result = await db_session.execute(query)
     contestant = result.scalar()
     votes = contestant.count_votes + 1 if inc else contestant.count_votes - 1
-    updates = update(Contestant).where(Contestant.telegram_id == tg_id).values(count_votes=votes)
+    updates = update(Competitor).where(Competitor.telegram_id == tg_id).values(count_votes=votes)
     await db_session.execute(updates)
 
 
-async def get_contestant_from_db(tg_id: int, db_session) -> Contestant:
-    query = select(Contestant).filter(Contestant.telegram_id == tg_id)
+async def get_competitor_from_db(tg_id: int, db_session) -> Competitor:
+    query = select(Competitor).filter(Competitor.telegram_id == tg_id)
     result: Result = await db_session.execute(query)
     contestant = result.scalar()
     return contestant
 
 
-async def get_all_contestants(db_session: AsyncSession) -> list[Contestant]:
-    query = select(Contestant)
+async def get_all_contestants(db_session: AsyncSession) -> list[Competitor]:
+    query = select(Competitor).order_by(Competitor.id)
     result = await db_session.execute(query)
     return list(result.scalars().all())
+
+
+async def get_resource(resource_label: str, db_session: AsyncSession) -> str:
+    query = select(Resource.file_id).where(Resource.label == resource_label)
+    result = await db_session.execute(query)
+    return result.scalar_one()

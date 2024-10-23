@@ -12,6 +12,7 @@ from database.crud.questions import update_state, get_question, add_answer_to_db
 router = Router()
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
     callback: types.CallbackQuery,
@@ -35,13 +36,14 @@ async def waiting_response_callback(
     messages_list.append(msg.message_id)
     await state.update_data(
         message_for_delete=messages_list,
-        contestant_id=question.contestant_id,
+        contestant_id=question.competitor_id,
         user_id=question.user_id,
         question_id=question_id,
     )
     await state.set_state(StatesBot.ANSWER_QUESTION)
 
 
+# noinspection PyTypeChecker
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.REJECTED))
 async def reject_callback(
     callback: types.CallbackQuery,
@@ -81,7 +83,6 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
 
     # delete messages
     messages_list = data.get("message_for_delete", [])
-    await state.update_data(message_for_delete=[])
     for msg in messages_list:
         await bot.delete_message(chat_id=by_msg.chat.id, message_id=msg)
 

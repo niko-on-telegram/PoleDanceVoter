@@ -1,20 +1,13 @@
 from aiogram import Router, types
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 
-from database.models import User
-
-from bot.internal.hello_img import hello_img
-from bot.keyboards.contestant_list import get_contestant_list
-from database.crud.contestant import get_all_contestants
+from bot.helpers import print_constestant_list
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def start_message(message: types.Message, user: User, db_session) -> None:
-    contestants = await get_all_contestants(db_session)
-    await message.answer_photo(
-        photo=hello_img,
-        caption=f'Hello, {user.full_name}. Список участников:',
-        reply_markup=get_contestant_list(contestants, user.telegram_id),
-    )
+async def start_message(message: types.Message, db_session, state: FSMContext) -> None:
+    await state.set_state()
+    await print_constestant_list(message, db_session)

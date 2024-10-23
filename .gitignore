@@ -8,6 +8,7 @@ venv2
 .vscode/
 .idea/
 build/
+data
 __pycache__/
 __pypackages__/
 logs

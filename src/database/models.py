@@ -41,54 +41,65 @@ class User(Base):
         )
 
 
-class Contestant(Base):
-    __tablename__ = 'contestants'
+class Resource(Base):
+    __tablename__ = 'resources'
+
+    label: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
+    file_id: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
+
+
+class Competitor(Base):
+    __tablename__ = 'competitors'
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
-    full_name: Mapped[str]
-    count_votes: Mapped[int]
-    description: Mapped[str]
-    video_first: Mapped[str]
-    video_second: Mapped[str]
-    video_third: Mapped[str]
+    full_name: Mapped[str | None]
+    poster: Mapped[str | None]
+    photos: Mapped[str | None]
+    info: Mapped[str | None]
+    presentation: Mapped[str | None]
+    dance_cut: Mapped[str | None]
+    dance_uncut: Mapped[str | None]
+    count_votes: Mapped[int] = mapped_column(default=0)
 
     def __str__(self):
         return (
-            f"Contestant(telegram_id={self.telegram_id}, "
+            f"Competitor(telegram_id={self.telegram_id}, "
             f"full_name={self.full_name}, "
+            f"poster={self.poster}), "
+            f"photos={self.photos}), "
+            f"info={self.info})"
+            f"presentation={self.presentation}), "
+            f"dance_cut={self.dance_cut}), "
+            f"dance_uncut={self.dance_uncut}), "
             f"count_votes={self.count_votes}), "
-            f"video_first={self.video_first}), "
-            f"video_second={self.video_second}), "
-            f"video_third={self.video_third}), "
-            f"description={self.description})"
         )
 
     def __repr__(self):
         return self.__str__()
 
-    def __eq__(self, other):
-        return (
-            self.telegram_id == other.telegram_id
-            and self.full_name == other.full_name
-            and self.count_votes == other.count_votes
-            and self.video_first == other.video_first
-            and self.video_second == other.video_second
-            and self.video_third == other.video_third
-            and self.description == other.description
-        )
+    # def __eq__(self, other):
+    #     return (
+    #         self.telegram_id == other.telegram_id
+    #         and self.full_name == other.full_name
+    #         and self.count_votes == other.count_votes
+    #         and self.video_first == other.video_first
+    #         and self.video_second == other.video_second
+    #         and self.video_third == other.video_third
+    #         and self.description == other.description
+    #     )
 
 
 class Votes(Base):
     __tablename__ = 'votes'
-    __table_args__ = (UniqueConstraint('user_id', 'contestant_id'),)
+    __table_args__ = (UniqueConstraint('user_id', 'competitor_id'),)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))
-    contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
+    competitor_id: Mapped[int] = mapped_column(ForeignKey("competitors.telegram_id", ondelete="CASCADE"))
     vote_state: Mapped[str]
 
     def __str__(self):
         return (
-            f"Voter(user_id={self.user_id}, " f"contestant_id={self.contestant_id}, " f"vote_state={self.vote_state}, "
+            f"Voter(user_id={self.user_id}, " f"competitor_id={self.competitor_id}, " f"vote_state={self.vote_state}, "
         )
 
     def __repr__(self):
@@ -97,7 +108,7 @@ class Votes(Base):
     def __eq__(self, other):
         return (
             self.user_id == other.user_id
-            and self.contestant_id == other.contestant_id
+            and self.competitor_id == other.competitor_id
             and self.vote_state == other.vote_state
         )
 
@@ -107,7 +118,7 @@ class Question(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))
-    contestant_id: Mapped[int] = mapped_column(ForeignKey("contestants.telegram_id", ondelete="CASCADE"))
+    competitor_id: Mapped[int] = mapped_column(ForeignKey("competitors.telegram_id", ondelete="CASCADE"))
     question: Mapped[str | None]
     answer: Mapped[str | None]
     state: Mapped[int]
@@ -116,7 +127,7 @@ class Question(Base):
         return (
             f"Questions(id={self.id}, user_id={self.user_id}, "
             f"user_id={self.user_id}, "
-            f"contestant_id={self.contestant_id}, "
+            f"competitor_id={self.competitor_id}, "
             f"question={self.question}, "
             f"answer={self.answer}, "
             f"state={self.state}, "
@@ -129,7 +140,7 @@ class Question(Base):
         return (
             self.id == other.id
             and self.user_id == other.user_id
-            and self.contestant_id == other.contestant_id
+            and self.competitor_id == other.competitor_id
             and self.question == other.question
             and self.answer == other.answer
             and self.state == other.state

@@ -6,68 +6,33 @@ from bot.callbacks.contestant_profile_callback import ContestantProfileCallbackF
 from bot.enums import ContestantEnum
 
 
-def contestant_keyboard(
-    user_id: int, contestant_id: int, video1_id: int, video2_id: int, video3_id: int, chat_id: int
-) -> InlineKeyboardMarkup:
+def contestant_keyboard(contestant_id: int, already_voted: bool) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(
-        text='Проголосовать',
-        callback_data=ContestantProfileCallbackFactory(
-            user_id=user_id,
-            contestant_id=contestant_id,
-            action=ContestantEnum.VOTE,
-            video1_id=video1_id,
-            video2_id=video2_id,
-            video3_id=video3_id,
-            chat_id=chat_id,
-        ),
-    )
+    if not already_voted:
+        kb.button(
+            text='Проголосовать',
+            callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.VOTE),
+        )
     kb.button(
         text='Задать вопрос',
-        callback_data=ContestantProfileCallbackFactory(
-            user_id=user_id,
-            contestant_id=contestant_id,
-            action=ContestantEnum.QUESTION,
-            video1_id=video1_id,
-            video2_id=video2_id,
-            video3_id=video3_id,
-            chat_id=chat_id,
-        ),
+        callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.QUESTION),
     )
     kb.button(
         text='Посмотреть ответы',
-        callback_data=ContestantProfileCallbackFactory(
-            user_id=user_id,
-            contestant_id=contestant_id,
-            action=ContestantEnum.CHECK_ANSWER,
-            video1_id=video1_id,
-            video2_id=video2_id,
-            video3_id=video3_id,
-            chat_id=chat_id,
-        ),
+        callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.CHECK_ANSWER),
     )
     kb.button(
         text='К списку участников',
-        callback_data=ContestantProfileCallbackFactory(
-            user_id=user_id,
-            contestant_id=contestant_id,
-            action=ContestantEnum.BACK,
-            video1_id=video1_id,
-            video2_id=video2_id,
-            video3_id=video3_id,
-            chat_id=chat_id,
-        ),
+        callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.BACK),
     )
     kb.adjust(1)
     return kb.as_markup()
 
 
-def contestant_keyboard_ok(user_id: int, contestant_id: int) -> InlineKeyboardMarkup:
+def contestant_keyboard_ok(contestant_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text='Закрыть',
-        callback_data=ContestantCallbackFactory(
-            user_id=user_id, contestant_id=contestant_id, action=ContestantEnum.DELETE
-        ),
+        callback_data=ContestantCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.DELETE),
     )
     return kb.as_markup()

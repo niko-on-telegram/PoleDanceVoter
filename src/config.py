@@ -42,7 +42,7 @@ def get_logging_config(app_name: str):
         "handlers": {
             "stdout": {
                 "class": "logging.StreamHandler",
-                "level": "INFO",
+                "level": "DEBUG",
                 "formatter": "main",
                 "stream": sys.stdout,
             },
@@ -52,7 +52,7 @@ def get_logging_config(app_name: str):
                 "formatter": "errors",
                 "stream": sys.stderr,
             },
-            "file": {
+            "file_info": {
                 "()": RotatingFileHandler,
                 "level": "INFO",
                 "formatter": "main",
@@ -61,11 +61,20 @@ def get_logging_config(app_name: str):
                 "backupCount": 3,
                 "encoding": "utf-8",
             },
+            "file_debug": {
+                "()": RotatingFileHandler,
+                "level": "DEBUG",
+                "formatter": "main",
+                "filename": f"logs/{app_name}_debug.log",
+                "maxBytes": 5000000,
+                "backupCount": 3,
+                "encoding": "utf-8",
+            },
         },
         "loggers": {
             "root": {
                 "level": "DEBUG",
-                "handlers": ["stdout", "stderr", "file"],
+                "handlers": ["stdout", "stderr", "file_info", "file_debug"],
             },
         },
     }

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import Router, types
 from aiogram.exceptions import TelegramBadRequest
@@ -6,7 +7,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InaccessibleMessage
 from magic_filter import F
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.testing.plugin.plugin_base import logging
 
 from bot.enums import VotesEnum, ContestantEnum
 from bot.callbacks.votes_factory import VotesCallbackFactory

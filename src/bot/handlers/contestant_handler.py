@@ -36,7 +36,10 @@ async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_
 async def callback_delete(
     callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
 ):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info("Failed to delete message")
 
 
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.BACK))

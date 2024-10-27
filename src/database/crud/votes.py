@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,6 +16,7 @@ async def add_votes_to_db(user_id: int, competitor_id: int, db_session: AsyncSes
     votes = await get_all_votes_ids(user_id, db_session)
     for vote in votes:
         if vote.competitor_id == competitor_id:
+            logging.warning(f"Last check save for {competitor_id}")
             break
     else:
         votes = Votes(user_id=user_id, competitor_id=competitor_id, vote_state="vote")

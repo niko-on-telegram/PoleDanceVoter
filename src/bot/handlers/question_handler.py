@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,8 +25,11 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     user_id = message.from_user.id
 
     messages_list = data.get("message_for_delete", [])
-    for msg in messages_list:
-        await bot.delete_message(chat_id=message.chat.id, message_id=msg)
+    try:
+        for msg in messages_list:
+            await bot.delete_message(chat_id=message.chat.id, message_id=msg)
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message for user {message.chat.id=}")
 
     if not user_id or not competitor_id:
         logging.warning("User or contestant not found")

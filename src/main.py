@@ -5,7 +5,7 @@ from pathlib import Path
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.memory import MemoryStorage, SimpleEventIsolation
 
 from bot.handlers.base_handlers import router as base_router
 from bot.handlers.errors_handler import router as errors_router
@@ -35,7 +35,7 @@ async def main():
 
     db = get_db(settings)
 
-    dispatcher = Dispatcher(storage=storage)
+    dispatcher = Dispatcher(storage=storage, events_isolation=SimpleEventIsolation())
     db_session_middleware = DBSessionMiddleware(db)
     dispatcher.message.middleware(db_session_middleware)
     dispatcher.callback_query.middleware(db_session_middleware)

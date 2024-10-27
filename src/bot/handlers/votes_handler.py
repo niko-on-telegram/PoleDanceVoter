@@ -2,8 +2,10 @@ import asyncio
 
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InaccessibleMessage
 from magic_filter import F
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.testing.plugin.plugin_base import logging
 
 from bot.enums import VotesEnum, ContestantEnum
 from bot.callbacks.votes_factory import VotesCallbackFactory
@@ -21,6 +23,9 @@ router = Router()
 async def callback_vote(
         callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession
 ):
+    if isinstance(callback.message, InaccessibleMessage):
+        logging.debug("Caught inaccessible message")
+        return
     await callback.message.delete()
     await inc_dec_contestant_vote(callback_data.contestant_id, db_session)
     await inc_dec_user_vote(callback.from_user.id, db_session)

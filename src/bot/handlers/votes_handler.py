@@ -1,6 +1,7 @@
 import asyncio
 
 from aiogram import Router, types
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InaccessibleMessage
 from magic_filter import F
@@ -26,7 +27,10 @@ async def callback_vote(
     if isinstance(callback.message, InaccessibleMessage):
         logging.debug("Caught inaccessible message")
         return
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message {callback.message.message_id}")
     await inc_dec_contestant_vote(callback_data.contestant_id, db_session)
     await inc_dec_user_vote(callback.from_user.id, db_session)
     await add_votes_to_db(
@@ -40,11 +44,17 @@ async def callback_vote(
 @router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
 async def callback_back(callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
                         state: FSMContext):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message {callback.message.message_id}")
     await callback.answer()
 
 
 @router.callback_query(CloseCallback.filter())
 async def callback_back(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message {callback.message.message_id}")
     await state.set_state()

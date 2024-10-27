@@ -26,8 +26,7 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
 
     messages_list = data.get("message_for_delete", [])
     try:
-        for msg in messages_list:
-            await bot.delete_message(chat_id=message.chat.id, message_id=msg)
+        await bot.delete_messages(chat_id=message.chat.id, message_ids=messages_list)
     except TelegramBadRequest:
         logging.info(f"Failed to delete message for user {message.chat.id=}")
 

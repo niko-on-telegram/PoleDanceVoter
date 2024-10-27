@@ -1,4 +1,7 @@
+import logging
+
 from aiogram import Router, F, types, Bot
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,14 +15,13 @@ from database.crud.questions import update_state, get_question, add_answer_to_db
 router = Router()
 
 
-# noinspection PyTypeChecker
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
-    callback: types.CallbackQuery,
-    callback_data: ContestantQuestionCallbackFactory,
-    bot: Bot,
-    state: FSMContext,
-    db_session: AsyncSession,
+        callback: types.CallbackQuery,
+        callback_data: ContestantQuestionCallbackFactory,
+        bot: Bot,
+        state: FSMContext,
+        db_session: AsyncSession,
 ):
     chat_id = callback.message.chat.id
     await callback.message.delete()
@@ -43,22 +45,22 @@ async def waiting_response_callback(
     await state.set_state(StatesBot.ANSWER_QUESTION)
 
 
-# noinspection PyTypeChecker
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.REJECTED))
 async def reject_callback(
-    callback: types.CallbackQuery,
-    callback_data: ContestantQuestionCallbackFactory,
-    db_session: AsyncSession,
-    state: FSMContext,
-    bot: Bot,
+        callback: types.CallbackQuery,
+        callback_data: ContestantQuestionCallbackFactory,
+        db_session: AsyncSession,
+        state: FSMContext,
+        bot: Bot,
 ):
     data = await state.get_data()
     messages_list = data.get("message_for_delete", [])
-    if not messages_list:
+
+    try:
+        await bot.delete_messages(chat_id=callback.from_user.id, message_ids=messages_list)
         await callback.message.delete()
-    await state.update_data(message_for_delete=[])
-    for msg in messages_list:
-        await bot.delete_message(chat_id=callback.message.chat.id, message_id=msg)
+    except TelegramBadRequest:
+        pass
 
     await update_state(question_id=callback_data.question_id, state=QuestionState.REJECTED, db_session=db_session)
     await callback.answer("Вопрос отклонён")
@@ -83,10 +85,13 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
 
     # delete messages
     messages_list = data.get("message_for_delete", [])
-    for msg in messages_list:
-        await bot.delete_message(chat_id=by_msg.chat.id, message_id=msg)
 
-    await message.delete()
+    try:
+        await bot.delete_messages(chat_id=message.chat.id, message_ids=messages_list)
+        await message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete video messages for user {message.chat.id}")
+
     # out from state
     await state.clear()
 
@@ -103,4 +108,3 @@ async def get_any_message(message: Message, state: FSMContext):
     messages_list.append(msg.message_id)
     messages_list.append(message.message_id)
     await state.update_data(message_for_delete=messages_list)
-    return

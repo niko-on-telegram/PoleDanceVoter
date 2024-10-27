@@ -24,9 +24,8 @@ router = Router()
 
 async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_list: list[int]):
     try:
-        for msg_id in msg_list:
-            logging.debug(f"{chat_id=} {msg_id=}")
-            await callback.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+        logging.debug(f"{chat_id=} {msg_list=}")
+        await callback.bot.delete_messages(chat_id=chat_id, message_ids=msg_list)
     except TelegramBadRequest:
         logging.info(f"Failed to delete video messages for user {chat_id}")
 

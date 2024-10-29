@@ -51,31 +51,6 @@ async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession,
     await state.clear()
 
 
-@router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
-async def callback_vote(
-    callback: types.CallbackQuery,
-    callback_data: ContestantProfileCallbackFactory,
-    db_session: AsyncSession,
-    user: User,
-):
-    if user.count_votes >= 3:
-        await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
-        return
-
-    voters = await get_all_votes_ids(user.telegram_id, db_session)
-    for voter in voters:
-        if voter.competitor_id == callback_data.contestant_id:
-            await callback.answer(text="Вы уже голосовали за этого участника!")
-            return
-
-    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
-    await callback.message.answer(
-        text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
-        reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
-    )
-    await callback.answer()
-
-
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(

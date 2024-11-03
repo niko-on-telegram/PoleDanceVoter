@@ -20,7 +20,6 @@ from database.crud.votes import add_votes_to_db
 router = Router()
 
 
-
 @router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
 async def callback_back(callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
                         state: FSMContext):

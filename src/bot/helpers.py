@@ -64,11 +64,16 @@ async def print_constestant_list(message: Message, db_session: AsyncSession):
     second_intro = """💥 Спасибо за вашу активность! Мы заняты подсчётом результатов и 1 ноября расскажем, кто вошёл 
 в заветный ТОП-20!💃"""
 
+    third_intro = """Мы объявили ТОП-20 участниц (в котором 21 имя), которые проходят во второй тур проекта "ПИЛОНиЯ ищет презентёров
+    
+Поздравляем всех! 
+Ждём от вас выполнения заданий второго этапа!"""
+
     contestants = await get_all_contestants(db_session)
     random.Random(hash(message.chat.id)).shuffle(contestants)
     logo_id = await get_resource(logo_label, db_session)
     await message.answer_photo(
         photo=logo_id,
-        caption=second_intro,
+        caption=third_intro,
         reply_markup=get_contestant_list(contestants),
     )

@@ -31,3 +31,4 @@ venv.bak/
 *.so
 *.db
 db_dumps
+utils/sender.py

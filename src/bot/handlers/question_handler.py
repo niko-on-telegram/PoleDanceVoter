@@ -8,6 +8,7 @@ from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.enums import QuestionState
+from bot.helpers import print_constestant_list
 from bot.keyboards.moderation_kb import moderation_keyboard
 from bot.states import StatesBot
 from config import settings
@@ -34,6 +35,12 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
         logging.warning("User or contestant not found")
         return
 
+    competitor = await get_competitor_from_db(competitor_id, db_session)
+    if competitor is None:
+        await state.set_state()
+        await print_constestant_list(message, db_session)
+        return
+
     # add question to db
     question_id = await add_question_to_db(
         competitor_id=competitor_id,
@@ -44,8 +51,6 @@ async def get_message(message: Message, state: FSMContext, db_session: AsyncSess
     )
 
     by_msg = await message.answer("Спасибо за вопрос!")
-
-    competitor = await get_competitor_from_db(competitor_id, db_session)
 
     question_header = f"Вопрос от {message.from_user.mention_html()} для {competitor.full_name}:"
     question = f"{question_header}\n\n{message.text}"

@@ -70,6 +70,10 @@ async def callback_vote(
             return
 
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+
+    if contestant is None:
+        await print_constestant_list(callback.message, db_session)
+        return
     await callback.message.answer(
         text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
         reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
@@ -87,7 +91,11 @@ async def callback_profile(
         await callback.message.delete()
     except TelegramBadRequest:
         logging.info(f"Failed to delete message {callback.message.message_id}")
-    await print_profile(callback.message, callback_data.contestant_id, db_session, state)
+    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+    if contestant is None:
+        await print_constestant_list(callback.message, db_session)
+        return
+    await print_profile(callback.message, contestant, db_session, state)
 
 
 # noinspection PyTypeChecker
@@ -96,10 +104,12 @@ async def callback_check_answer(
         callback: types.CallbackQuery,
         callback_data: ContestantProfileCallbackFactory,
         db_session: AsyncSession,
-        state: FSMContext,
 ):
     questions = await get_all_questions(callback_data.contestant_id, db_session)
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+    if contestant is None:
+        await print_constestant_list(callback.message, db_session)
+        return
     if not questions:
         question_txt = f"Участнику {contestant.full_name} ещё не задали вопросов."
     else:
@@ -124,6 +134,9 @@ async def callback_question(
         state: FSMContext,
 ):
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+    if contestant is None:
+        await print_constestant_list(callback.message, db_session)
+        return
     msg = await callback.message.answer(
         text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard(),
     )

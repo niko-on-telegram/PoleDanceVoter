@@ -12,9 +12,11 @@ from bot.enums import ContestantEnum
 from bot.helpers import print_constestant_list, print_profile
 from bot.keyboards.close_kb import close_keyboard
 from bot.keyboards.contestant_choose import contestant_keyboard_ok
+from bot.keyboards.votes_kb import votes_keyboard
 from bot.states import StatesBot
 from database.crud.contestant import get_competitor_from_db
 from database.crud.questions import get_all_questions
+from database.crud.votes import get_all_votes_ids
 from database.models import User
 
 router = Router()
@@ -31,7 +33,8 @@ async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
 async def callback_delete(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext,
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession,
+        state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -49,10 +52,36 @@ async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession,
     await state.clear()
 
 
+@router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
+async def callback_vote(
+        callback: types.CallbackQuery,
+        callback_data: ContestantProfileCallbackFactory,
+        db_session: AsyncSession,
+        user: User,
+):
+    if user.count_votes >= 3:
+        await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
+        return
+
+    voters = await get_all_votes_ids(user.telegram_id, db_session)
+    for voter in voters:
+        if voter.competitor_id == callback_data.contestant_id:
+            await callback.answer(text="Вы уже голосовали за этого участника!")
+            return
+
+    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+    await callback.message.answer(
+        text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
+        reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
+    )
+    await callback.answer()
+
+
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext,
+        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession,
+        state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -64,10 +93,10 @@ async def callback_profile(
 # noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
 async def callback_check_answer(
-    callback: types.CallbackQuery,
-    callback_data: ContestantProfileCallbackFactory,
-    db_session: AsyncSession,
-    state: FSMContext,
+        callback: types.CallbackQuery,
+        callback_data: ContestantProfileCallbackFactory,
+        db_session: AsyncSession,
+        state: FSMContext,
 ):
     questions = await get_all_questions(callback_data.contestant_id, db_session)
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
@@ -88,11 +117,11 @@ async def callback_check_answer(
 # noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(
-    callback: types.CallbackQuery,
-    callback_data: ContestantProfileCallbackFactory,
-    db_session: AsyncSession,
-    user: User,
-    state: FSMContext,
+        callback: types.CallbackQuery,
+        callback_data: ContestantProfileCallbackFactory,
+        db_session: AsyncSession,
+        user: User,
+        state: FSMContext,
 ):
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
     msg = await callback.message.answer(

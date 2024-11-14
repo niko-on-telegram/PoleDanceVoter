@@ -27,6 +27,10 @@ async def print_profile(message: Message, contestant_id: int, db_session: AsyncS
     msg_list.append(message.message_id)
     message = await message.answer_video(contestant.dance_cut, protect_content=True)
     msg_list.append(message.message_id)
+    message = await message.answer_video(contestant.dance_uncut, protect_content=True)
+    msg_list.append(message.message_id)
+    message = await message.answer_video(contestant.video_mid, protect_content=True)
+    msg_list.append(message.message_id)
 
     already_voted = False
     voters = await get_all_votes_ids(message.chat.id, db_session)
@@ -36,7 +40,7 @@ async def print_profile(message: Message, contestant_id: int, db_session: AsyncS
 
     reply_markup = contestant_keyboard(contestant_id, already_voted)
 
-    message = await message.answer_video(contestant.dance_uncut, reply_markup=reply_markup, protect_content=True)
+    message = await message.answer_video(contestant.video_pro, reply_markup=reply_markup, protect_content=True)
     msg_list.append(message.message_id)
 
     logging.debug(f"{message.chat.id=} {msg_list=}")
@@ -44,36 +48,23 @@ async def print_profile(message: Message, contestant_id: int, db_session: AsyncS
 
 
 async def print_constestant_list(message: Message, db_session: AsyncSession):
-    intro_text = """Привет! 
-В первый тур прошли ТОП-30 участниц, но во второй тур попадут только 20. 
-Кто это будет, зависит только от зрительских голосов.
+    main_message = """Второй этап Проекта "ПИЛОНиЯ Ищет Презентёров" начался!
 
-Проголосуй за участников проекта и выбери кто достоин пройти дальше
+👉 Учитываться будут только голоса людей, подписанных на наш Telegram-канал @pdcamp
 
-Правила голосования:
+👉 Вы ДОЛЖНЫ проголосовать за 3х участников проекта, чтобы ваш голос был принят
 
-✅ Ты должна отдать свой голос за 3-х понравившихся участниц.
-🚫 Но отменить голос нельзя. Поэтому выбирай внимательно)
-⚠️ Если ты проголосовала только за 1 или 2ух участниц -такие голоса НЕ будут учитываться.
-➡️ Окончание голосования 1 тура – 29 октября, в 23:59:59
+👉 Судья так же голосуют за 3х участников проекта. 1 голос судьи = 50 голосам зрителей
 
-А также среди активных зрителей мы разыграем приз – поездка в смену лагеря. Подробнее в нашем инста. 
+Таким образом, как зрители могут повлиять на результаты голосования судей, так и, наоборот
 
-Итоги конкурса: 14 декабря."""
-
-    second_intro = """💥 Спасибо за вашу активность! Мы заняты подсчётом результатов и 1 ноября расскажем, кто вошёл 
-в заветный ТОП-20!💃"""
-
-    third_intro = """Мы объявили ТОП-20 участниц (в котором 21 имя), которые проходят во второй тур проекта "ПИЛОНиЯ ищет презентёров
-    
-Поздравляем всех! 
-Ждём от вас выполнения заданий второго этапа!"""
+Голосование продлится до 22 ноября 2024 🎆"""
 
     contestants = await get_all_contestants(db_session)
     random.Random(hash(message.chat.id)).shuffle(contestants)
     logo_id = await get_resource(logo_label, db_session)
     await message.answer_photo(
         photo=logo_id,
-        caption=third_intro,
+        caption=main_message,
         reply_markup=get_contestant_list(contestants),
     )

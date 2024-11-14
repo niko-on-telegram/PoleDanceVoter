@@ -5,20 +5,20 @@ from bot.enums import QuestionState
 from database.models import Question
 
 
+def format_question(question: Question) -> str:
+    return f"<b>{question.question}</b>\n{question.answer}"
+
+
 async def get_all_questions(contestant_id: int, db_session: AsyncSession) -> list[str]:
     # noinspection PyTypeChecker
-    query = select(Question).filter(Question.competitor_id == contestant_id)
+    query = select(Question).filter(Question.competitor_id == contestant_id).filter(Question.state == QuestionState.ANSWERED)
     result = await db_session.execute(query)
-    questions = result.scalars().all()
-    list_questions = list()
-    for it in questions:  # Берем только вопросы с ответами и выделяем вопрос жирным
-        if it.state == QuestionState.ANSWERED:
-            list_questions.append(f"<b>{it.question}</b>\n{it.answer}")
+    list_questions = [format_question(it) for it in result.scalars().all()]
     return list_questions
 
 
 async def add_question_to_db(
-    competitor_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession,
+        competitor_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession,
 ) -> int:
     new_question = Question(competitor_id=competitor_id, user_id=user_id, question=question, state=state)
     db_session.add(new_question)

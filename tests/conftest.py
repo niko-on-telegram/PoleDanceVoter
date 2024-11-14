@@ -1,6 +1,3 @@
-import asyncio
-import os
-
 import pytest
 import pytest_asyncio
 from aiogram.types import InlineKeyboardMarkup
@@ -11,7 +8,7 @@ from bot.callbacks.contestant_factory import ContestantCallbackFactory
 from bot.callbacks.votes_factory import VotesCallbackFactory
 from bot.enums import ContestantEnum, VotesEnum
 from database.database_connector import DatabaseConnector
-from database.models import Base, User, Contestant
+from database.models import Base, User, Competitor
 
 
 @pytest_asyncio.fixture()
@@ -96,52 +93,37 @@ def default_user_list_username() -> list[User]:
 
 
 @pytest.fixture
-def default_contestants_list(default_user) -> list[Contestant]:
+def default_contestants_list(default_user) -> list[Competitor]:
     return [
-        Contestant(
+        Competitor(
             telegram_id=361557982,
             full_name="Contestnat1",
             count_votes=0,
-            description="description1",
-            video_first="video1",
-            video_second="video2",
-            video_third="video3",
+            info="description1",
         ),
-        Contestant(
+        Competitor(
             telegram_id=361557984,
             full_name="Contestnat2",
             count_votes=1,
-            description="description2",
-            video_first="video1",
-            video_second="video2",
-            video_third="video3",
+            info="description2",
         ),
-        Contestant(
+        Competitor(
             telegram_id=361557985,
             full_name="Contestnat3",
             count_votes=2,
-            description="description3",
-            video_first="video1",
-            video_second="video2",
-            video_third="video3",
+            info="description3",
         ),
-        Contestant(
+        Competitor(
             telegram_id=361557986,
             full_name="Contestnat4",
             count_votes=3,
-            description="description4",
-            video_first="video1",
-            video_second="video2",
-            video_third="video3",
+            info="description4",
         ),
-        Contestant(
+        Competitor(
             telegram_id=361557987,
             full_name="Contestnat5",
             count_votes=4,
-            description="description5",
-            video_first="video1",
-            video_second="video2",
-            video_third="video3",
+            info="description5",
         ),
     ]
 
@@ -202,7 +184,7 @@ def default_contestants_kb(default_user: User, default_contestants_list) -> Inli
 
 
 @pytest.fixture
-def default_vote_kb(default_user: User, default_contestants_list: list[Contestant]) -> InlineKeyboardMarkup:
+def default_vote_kb(default_user: User, default_contestants_list: list[Competitor]) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text="Проголосовать",

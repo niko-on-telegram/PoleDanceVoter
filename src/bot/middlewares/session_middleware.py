@@ -18,6 +18,6 @@ class DBSessionMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         async with self.db.session_factory.begin() as db_session:
-            data['db_session'] = db_session
+            data["db_session"] = db_session
             res = await handler(event, data)
             return res

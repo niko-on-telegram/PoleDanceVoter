@@ -16,7 +16,7 @@ router = Router()
 @router.errors()
 async def error_handler(error_event: "ErrorEvent", bot: aiogram.Bot):
     exc_info = error_event.exception
-    exc_traceback = ''.join(traceback.format_exception(None, exc_info, exc_info.__traceback__))
+    exc_traceback = "".join(traceback.format_exception(None, exc_info, exc_info.__traceback__))
     tb = exc_traceback[-3500:]
 
     error_message = (

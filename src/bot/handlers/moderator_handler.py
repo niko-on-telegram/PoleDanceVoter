@@ -23,7 +23,7 @@ async def waiting_response_callback(
     question = await get_question(question_id=callback_data.question_id, db_session=db_session)
     await bot.send_message(
         chat_id=question.competitor_id,
-        text=f"Вам пришёл вопрос \"{question.question}\":",
+        text=f'Вам пришёл вопрос "{question.question}":',
         reply_markup=question_keyboard(question.id),
     )
     await update_state(

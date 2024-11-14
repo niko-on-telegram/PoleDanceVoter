@@ -18,9 +18,9 @@ class Settings(BaseSettings):
 
     @property
     def postgres_db_url(self) -> str:
-        return f'postgresql+asyncpg://{self.DBUSER}:{self.DBPASS.get_secret_value()}@{self.DBHOST}:{self.DBPORT}/{self.DBNAME}'
+        return f"postgresql+asyncpg://{self.DBUSER}:{self.DBPASS.get_secret_value()}@{self.DBHOST}:{self.DBPORT}/{self.DBNAME}"
 
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', case_sensitive=False)
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
 
 settings = Settings()

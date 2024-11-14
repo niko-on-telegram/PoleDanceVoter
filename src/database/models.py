@@ -7,14 +7,14 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 class Base(DeclarativeBase):
     __abstract__ = True
     metadata = MetaData()
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = {"extend_existing": True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     full_name: Mapped[str]
@@ -42,14 +42,14 @@ class User(Base):
 
 
 class Resource(Base):
-    __tablename__ = 'resources'
+    __tablename__ = "resources"
 
     label: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
     file_id: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
 
 
 class Competitor(Base):
-    __tablename__ = 'competitors'
+    __tablename__ = "competitors"
 
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     full_name: Mapped[str | None]
@@ -75,8 +75,8 @@ class Competitor(Base):
 
 
 class Votes(Base):
-    __tablename__ = 'votes'
-    __table_args__ = (UniqueConstraint('user_id', 'competitor_id'),)
+    __tablename__ = "votes"
+    __table_args__ = (UniqueConstraint("user_id", "competitor_id"),)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))
     competitor_id: Mapped[int] = mapped_column(ForeignKey("competitors.telegram_id", ondelete="CASCADE"))
@@ -99,7 +99,7 @@ class Votes(Base):
 
 
 class Question(Base):
-    __tablename__ = 'questions'
+    __tablename__ = "questions"
 
     id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.telegram_id", ondelete="CASCADE"))

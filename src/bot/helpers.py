@@ -15,7 +15,7 @@ from database.crud.votes import get_all_votes_ids
 async def print_profile(message: Message, contestant_id: int, db_session: AsyncSession, state: FSMContext):
     contestant = await get_competitor_from_db(contestant_id, db_session)
 
-    photos_list = [InputMediaPhoto(media=photo) for photo in contestant.photos.split(', ')]
+    photos_list = [InputMediaPhoto(media=photo) for photo in contestant.photos.split(", ")]
     msg_list = []
     message = await message.answer_photo(contestant.poster)
     msg_list.append(message.message_id)

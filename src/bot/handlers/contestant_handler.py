@@ -44,7 +44,7 @@ async def callback_delete(
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.BACK))
 async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession, user: User, state: FSMContext):
     data = await state.get_data()
-    msg_ids = data.get('msg_ids', [])
+    msg_ids = data.get("msg_ids", [])
     await delete_message_video(callback=callback, chat_id=callback.from_user.id, msg_list=msg_ids)
 
     await print_constestant_list(message=callback.message, db_session=db_session)
@@ -97,7 +97,9 @@ async def callback_question(
     state: FSMContext,
 ):
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
-    msg = await callback.message.answer(text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard())
+    msg = await callback.message.answer(
+        text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard()
+    )
 
     data = await state.get_data()
     messages = data.get("message_for_delete", [])

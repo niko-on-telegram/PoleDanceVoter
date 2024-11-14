@@ -17,11 +17,11 @@ router = Router()
 
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.WAITING_RESPONSE))
 async def waiting_response_callback(
-        callback: types.CallbackQuery,
-        callback_data: ContestantQuestionCallbackFactory,
-        bot: Bot,
-        state: FSMContext,
-        db_session: AsyncSession,
+    callback: types.CallbackQuery,
+    callback_data: ContestantQuestionCallbackFactory,
+    bot: Bot,
+    state: FSMContext,
+    db_session: AsyncSession,
 ):
     chat_id = callback.message.chat.id
     await callback.message.delete()
@@ -31,7 +31,7 @@ async def waiting_response_callback(
 
     msg = await bot.send_message(
         chat_id=chat_id,
-        text=f"Введите ответ на вопрос \"{question.question}\" текстом: ",
+        text=f'Введите ответ на вопрос "{question.question}" текстом: ',
         reply_markup=question_reject_keyboard(question_id=question_id),
     )
     messages_list = data.get("message_for_delete", [])
@@ -47,11 +47,11 @@ async def waiting_response_callback(
 
 @router.callback_query(ContestantQuestionCallbackFactory.filter(F.state == QuestionState.REJECTED))
 async def reject_callback(
-        callback: types.CallbackQuery,
-        callback_data: ContestantQuestionCallbackFactory,
-        db_session: AsyncSession,
-        state: FSMContext,
-        bot: Bot,
+    callback: types.CallbackQuery,
+    callback_data: ContestantQuestionCallbackFactory,
+    db_session: AsyncSession,
+    state: FSMContext,
+    bot: Bot,
 ):
     data = await state.get_data()
     messages_list = data.get("message_for_delete", [])

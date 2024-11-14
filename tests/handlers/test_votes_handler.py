@@ -18,7 +18,7 @@ async def test_callback_back(
     callback = AsyncMock()
     callback.message = message
     callback_back_data = default_votes_callback_factory_back
-    await callback_back(callback=callback, callback_data=callback_back_data, db_session=db_session)
+    await callback_back(callback=callback)
     called_args, called_kwargs = callback.message.answer_media_group.call_args
     assert called_kwargs['protect_content'] == True
     assert called_kwargs['media'] == [

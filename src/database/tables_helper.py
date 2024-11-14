@@ -20,5 +20,5 @@ def main():
     asyncio.run(create_or_drop_db(db.engine))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

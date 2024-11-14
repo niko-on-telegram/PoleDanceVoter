@@ -1,8 +1,8 @@
-from sqlalchemy import select, Result, update
+from sqlalchemy import Result, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Question
 from bot.enums import QuestionState
+from database.models import Question
 
 
 async def get_all_questions(contestant_id: int, db_session: AsyncSession) -> list[str]:
@@ -18,7 +18,7 @@ async def get_all_questions(contestant_id: int, db_session: AsyncSession) -> lis
 
 
 async def add_question_to_db(
-    competitor_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession
+    competitor_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession,
 ) -> int:
     new_question = Question(competitor_id=competitor_id, user_id=user_id, question=question, state=state)
     db_session.add(new_question)

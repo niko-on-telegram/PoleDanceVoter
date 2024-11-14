@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from bot.callbacks.votes_factory import VotesCallbackFactory
 from bot.enums import VotesEnum
 

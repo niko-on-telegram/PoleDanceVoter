@@ -1,5 +1,5 @@
-from logging.handlers import RotatingFileHandler
 import sys
+from logging.handlers import RotatingFileHandler
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict

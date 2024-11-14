@@ -24,7 +24,7 @@ bot = Bot(
 )
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s: " "%(filename)s: " "%(levelname)s: " "%(funcName)s(): " "%(lineno)d:\t" "%(message)s",
+    format="%(asctime)s: %(filename)s: %(levelname)s: %(funcName)s(): %(lineno)d:\t%(message)s",
 )
 
 
@@ -66,7 +66,7 @@ async def folder_walker():
             for file in files:
                 match file.lower():
                     case "tg_id.txt":
-                        logging.info(f"Processing tg_id...")
+                        logging.info("Processing tg_id...")
                         with open(os.path.join(subdir, file)) as f:
                             tg_id = int(f.read())
                         new_competitor["telegram_id"] = tg_id
@@ -91,7 +91,7 @@ async def folder_walker():
                         media_id = await process_media(file_path)
                         new_competitor["presentation"] = media_id
                     case "info.txt":
-                        logging.info(f"Processing info...")
+                        logging.info("Processing info...")
                         with open(os.path.join(subdir, file)) as f:
                             lines = f.readlines()
                         full_name = lines[0].strip()

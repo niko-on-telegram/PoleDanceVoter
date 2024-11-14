@@ -1,6 +1,5 @@
-from sqlalchemy import Result, select
+from sqlalchemy import Result, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update
 
 from database.models import User
 

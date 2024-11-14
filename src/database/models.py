@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, MetaData, String, func, ForeignKey, UniqueConstraint
+from sqlalchemy import BigInteger, ForeignKey, MetaData, String, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -84,7 +84,7 @@ class Votes(Base):
 
     def __str__(self):
         return (
-            f"Voter(user_id={self.user_id}, " f"competitor_id={self.competitor_id}, " f"vote_state={self.vote_state}, "
+            f"Voter(user_id={self.user_id}, competitor_id={self.competitor_id}, vote_state={self.vote_state}, "
         )
 
     def __repr__(self):

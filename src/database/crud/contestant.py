@@ -1,7 +1,7 @@
-from sqlalchemy import Result, select
+from sqlalchemy import Result, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from database.models import Competitor, Resource
-from sqlalchemy import update
 
 
 async def inc_dec_vote_to_db(tg_id: int, db_session: AsyncSession, inc: bool = True):

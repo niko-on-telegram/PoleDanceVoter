@@ -1,8 +1,8 @@
 import asyncio
-from config import settings
 
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from config import settings
 from database.database_connector import get_db
 from database.models import Base
 

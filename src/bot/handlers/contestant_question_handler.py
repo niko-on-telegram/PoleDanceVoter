@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import Router, F, types, Bot
+from aiogram import Bot, F, Router, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -10,7 +10,7 @@ from bot.callbacks.contestant_question_factory import ContestantQuestionCallback
 from bot.enums import QuestionState
 from bot.keyboards.contestant_question_kb import question_reject_keyboard
 from bot.states import StatesBot
-from database.crud.questions import update_state, get_question, add_answer_to_db
+from database.crud.questions import add_answer_to_db, get_question, update_state
 
 router = Router()
 

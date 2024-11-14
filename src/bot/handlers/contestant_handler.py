@@ -12,11 +12,9 @@ from bot.enums import ContestantEnum
 from bot.helpers import print_constestant_list, print_profile
 from bot.keyboards.close_kb import close_keyboard
 from bot.keyboards.contestant_choose import contestant_keyboard_ok
-from bot.keyboards.votes_kb import votes_keyboard
 from bot.states import StatesBot
 from database.crud.contestant import get_competitor_from_db
 from database.crud.questions import get_all_questions
-from database.crud.votes import get_all_votes_ids
 from database.models import User
 
 router = Router()
@@ -33,7 +31,7 @@ async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
 async def callback_delete(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -54,7 +52,7 @@ async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession,
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(
-    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext
+    callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession, state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -98,7 +96,7 @@ async def callback_question(
 ):
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
     msg = await callback.message.answer(
-        text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard()
+        text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard(),
     )
 
     data = await state.get_data()

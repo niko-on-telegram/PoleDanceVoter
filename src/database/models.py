@@ -59,34 +59,19 @@ class Competitor(Base):
     presentation: Mapped[str | None]
     dance_cut: Mapped[str | None]
     dance_uncut: Mapped[str | None]
+    video_mid: Mapped[str | None]
+    video_pro: Mapped[str | None]
     count_votes: Mapped[int] = mapped_column(default=0)
 
     def __str__(self):
         return (
             f"Competitor(telegram_id={self.telegram_id}, "
             f"full_name={self.full_name}, "
-            f"poster={self.poster}), "
-            f"photos={self.photos}), "
-            f"info={self.info})"
-            f"presentation={self.presentation}), "
-            f"dance_cut={self.dance_cut}), "
-            f"dance_uncut={self.dance_uncut}), "
             f"count_votes={self.count_votes}), "
         )
 
     def __repr__(self):
         return self.__str__()
-
-    # def __eq__(self, other):
-    #     return (
-    #         self.telegram_id == other.telegram_id
-    #         and self.full_name == other.full_name
-    #         and self.count_votes == other.count_votes
-    #         and self.video_first == other.video_first
-    #         and self.video_second == other.video_second
-    #         and self.video_third == other.video_third
-    #         and self.description == other.description
-    #     )
 
 
 class Votes(Base):

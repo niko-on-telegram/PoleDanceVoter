@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DBPASS: SecretStr = "postgres"
     DBNAME: str = "postgres"
     DBUSER: str = "postgres"
-    DBHOST: str = "localhost"
+    DBHOST: str = "postgres"
     DBPORT: int = 5432
     echo: bool = False
 

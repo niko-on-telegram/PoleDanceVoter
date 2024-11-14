@@ -5,10 +5,44 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
+      - ./db_dumps/stage_2_init_.sql:/docker-entrypoint-initdb.d/db_init_stage_2.sql
       - postgres_data:/var/lib/postgresql/data
-
+  pgbackups:
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - ./pgbackups:/backups
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_EXTRA_OPTS=-Z1 --schema=public --blobs
+      - SCHEDULE=@daily
+      - BACKUP_ON_START=TRUE
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=8080
+  bot:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      DBHOST: postgres
+    volumes:
+      - ./logs:/app/logs
 volumes:
   postgres_data:

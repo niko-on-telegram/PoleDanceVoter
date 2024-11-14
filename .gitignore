@@ -30,3 +30,4 @@ venv.bak/
 *$py.class
 *.so
 *.db
+db_dumps

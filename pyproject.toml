@@ -24,7 +24,7 @@ dependencies = [
     'alembic>=1.13.1',
     'black>=24.4.2',
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [project.scripts]
 bot-run = "main:run_main"
@@ -33,12 +33,12 @@ create-contestants = "data_pusher.contestants_push:main"
 
 [tool.black]
 line-length = 120
-target-version = ['py311']
+target-version = ['py312']
 skip-string-normalization = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 select = ["ALL"]
 ignore = ["Q", "T", "D", "ANN", "UP", "RUF", "G004", "RET504", "ISC002", "INP001", "EM101", "TRY003", "PTH", "TD", "FIX002"]
 

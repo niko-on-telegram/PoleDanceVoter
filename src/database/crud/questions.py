@@ -11,14 +11,22 @@ def format_question(question: Question) -> str:
 
 async def get_all_questions(contestant_id: int, db_session: AsyncSession) -> list[str]:
     # noinspection PyTypeChecker
-    query = select(Question).filter(Question.competitor_id == contestant_id).filter(Question.state == QuestionState.ANSWERED)
+    query = (
+        select(Question)
+        .filter(Question.competitor_id == contestant_id)
+        .filter(Question.state == QuestionState.ANSWERED)
+    )
     result = await db_session.execute(query)
     list_questions = [format_question(it) for it in result.scalars().all()]
     return list_questions
 
 
 async def add_question_to_db(
-        competitor_id: int, user_id: int, question: str, state: QuestionState, db_session: AsyncSession,
+    competitor_id: int,
+    user_id: int,
+    question: str,
+    state: QuestionState,
+    db_session: AsyncSession,
 ) -> int:
     new_question = Question(competitor_id=competitor_id, user_id=user_id, question=question, state=state)
     db_session.add(new_question)

@@ -83,9 +83,7 @@ class Votes(Base):
     vote_state: Mapped[str]
 
     def __str__(self):
-        return (
-            f"Voter(user_id={self.user_id}, competitor_id={self.competitor_id}, vote_state={self.vote_state}, "
-        )
+        return f"Voter(user_id={self.user_id}, competitor_id={self.competitor_id}, vote_state={self.vote_state}, "
 
     def __repr__(self):
         return self.__str__()

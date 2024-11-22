@@ -27,7 +27,9 @@ async def waiting_response_callback(
         reply_markup=question_keyboard(question.id),
     )
     await update_state(
-        question_id=callback_data.question_id, state=QuestionState.WAITING_RESPONSE, db_session=db_session,
+        question_id=callback_data.question_id,
+        state=QuestionState.WAITING_RESPONSE,
+        db_session=db_session,
     )
     await state.clear()
     await callback.answer("Вопрос согласован")
@@ -35,11 +37,16 @@ async def waiting_response_callback(
 
 @router.callback_query(ModerationCallbackFactory.filter(F.state == QuestionState.MODERATION_REJECT))
 async def reject_callback(
-    callback: types.CallbackQuery, callback_data: ModerationCallbackFactory, state: FSMContext, db_session: AsyncSession,
+    callback: types.CallbackQuery,
+    callback_data: ModerationCallbackFactory,
+    state: FSMContext,
+    db_session: AsyncSession,
 ):
     await callback.message.delete()
     await update_state(
-        question_id=callback_data.question_id, state=QuestionState.MODERATION_REJECT, db_session=db_session,
+        question_id=callback_data.question_id,
+        state=QuestionState.MODERATION_REJECT,
+        db_session=db_session,
     )
     await state.clear()
     await callback.answer("Вопрос отклонён")

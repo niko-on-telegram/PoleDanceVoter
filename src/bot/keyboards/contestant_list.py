@@ -12,7 +12,8 @@ def get_contestant_list(contestants: list[Competitor]) -> InlineKeyboardMarkup:
         kb.button(
             text=f"{contestant.full_name}",
             callback_data=ContestantCallbackFactory(
-                contestant_id=contestant.telegram_id, action=ContestantEnum.PROFILE,
+                contestant_id=contestant.telegram_id,
+                action=ContestantEnum.PROFILE,
             ),
         )
     kb.adjust(1)

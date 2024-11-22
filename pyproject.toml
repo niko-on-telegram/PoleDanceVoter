@@ -42,7 +42,7 @@ target-version = "py312"
 select = ["ALL"]
 ignore = ["Q", "T", "D", "ANN", "UP", "RUF", "G004", "RET504", "ISC002", "INP001", "EM101", "TRY003", "PTH", "TD", "FIX002"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
 "src/database/tables_helper.py" = ["ALL"]
 "src/database/populate_helper.py" = ["ALL"]

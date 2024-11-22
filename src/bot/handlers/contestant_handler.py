@@ -33,8 +33,10 @@ async def delete_message_video(callback: types.CallbackQuery, chat_id: int, msg_
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.DELETE))
 async def callback_delete(
-        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession,
-        state: FSMContext,
+    callback: types.CallbackQuery,
+    callback_data: ContestantCallbackFactory,
+    db_session: AsyncSession,
+    state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -52,40 +54,42 @@ async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession,
     await state.clear()
 
 
-@router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
-async def callback_vote(
-        callback: types.CallbackQuery,
-        callback_data: ContestantProfileCallbackFactory,
-        db_session: AsyncSession,
-        user: User,
-):
-    if user.count_votes >= 3:
-        await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
-        return
-
-    voters = await get_all_votes_ids(user.telegram_id, db_session)
-    for voter in voters:
-        if voter.competitor_id == callback_data.contestant_id:
-            await callback.answer(text="Вы уже голосовали за этого участника!")
-            return
-
-    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
-
-    if contestant is None:
-        await print_constestant_list(callback.message, db_session)
-        return
-    await callback.message.answer(
-        text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
-        reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
-    )
-    await callback.answer()
+# @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
+# async def callback_vote(
+#         callback: types.CallbackQuery,
+#         callback_data: ContestantProfileCallbackFactory,
+#         db_session: AsyncSession,
+#         user: User,
+# ):
+#     if user.count_votes >= 3:
+#         await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
+#         return
+#
+#     voters = await get_all_votes_ids(user.telegram_id, db_session)
+#     for voter in voters:
+#         if voter.competitor_id == callback_data.contestant_id:
+#             await callback.answer(text="Вы уже голосовали за этого участника!")
+#             return
+#
+#     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+#
+#     if contestant is None:
+#         await print_constestant_list(callback.message, db_session)
+#         return
+#     await callback.message.answer(
+#         text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
+#         reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
+#     )
+#     await callback.answer()
 
 
 # noinspection PyTypeChecker
 @router.callback_query(ContestantCallbackFactory.filter(F.action == ContestantEnum.PROFILE))
 async def callback_profile(
-        callback: types.CallbackQuery, callback_data: ContestantCallbackFactory, db_session: AsyncSession,
-        state: FSMContext,
+    callback: types.CallbackQuery,
+    callback_data: ContestantCallbackFactory,
+    db_session: AsyncSession,
+    state: FSMContext,
 ):
     try:
         await callback.message.delete()
@@ -101,9 +105,9 @@ async def callback_profile(
 # noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.CHECK_ANSWER))
 async def callback_check_answer(
-        callback: types.CallbackQuery,
-        callback_data: ContestantProfileCallbackFactory,
-        db_session: AsyncSession,
+    callback: types.CallbackQuery,
+    callback_data: ContestantProfileCallbackFactory,
+    db_session: AsyncSession,
 ):
     questions = await get_all_questions(callback_data.contestant_id, db_session)
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
@@ -127,18 +131,19 @@ async def callback_check_answer(
 # noinspection PyTypeChecker
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.QUESTION))
 async def callback_question(
-        callback: types.CallbackQuery,
-        callback_data: ContestantProfileCallbackFactory,
-        db_session: AsyncSession,
-        user: User,
-        state: FSMContext,
+    callback: types.CallbackQuery,
+    callback_data: ContestantProfileCallbackFactory,
+    db_session: AsyncSession,
+    user: User,
+    state: FSMContext,
 ):
     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
     if contestant is None:
         await print_constestant_list(callback.message, db_session)
         return
     msg = await callback.message.answer(
-        text=f"Напишите вопрос для {contestant.full_name}, только текст.", reply_markup=close_keyboard(),
+        text=f"Напишите вопрос для {contestant.full_name}, только текст.",
+        reply_markup=close_keyboard(),
     )
 
     data = await state.get_data()

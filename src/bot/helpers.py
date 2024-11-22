@@ -49,8 +49,7 @@ async def print_profile(message: Message, contestant: Competitor, db_session: As
 async def print_constestant_list(message: Message, db_session: AsyncSession):
     main_message = """Спасибо за участие!
     
-Мы занимаемся подсчётом результатов и 24 ноября раскроем имена тех, 
-    кто войдёт в ТОП-10! 💃"""
+Мы занимаемся подсчётом результатов и 24 ноября раскроем имена тех, кто войдёт в ТОП-10! 💃"""
 
     contestants = await get_all_contestants(db_session)
     random.Random(hash(message.chat.id)).shuffle(contestants)

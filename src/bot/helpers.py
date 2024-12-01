@@ -39,6 +39,9 @@ async def print_profile(message: Message, contestant: Competitor, db_session: As
 
     reply_markup = contestant_keyboard(contestant.telegram_id, already_voted)
 
+    message = await message.answer_video(contestant.video_pro, reply_markup=reply_markup, protect_content=True)
+    msg_list.append(message.message_id)
+
     message = await message.answer_video(contestant.video_3rd_tour, reply_markup=reply_markup, protect_content=True)
     msg_list.append(message.message_id)
 

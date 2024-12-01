@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     BOT_TOKEN: SecretStr
     ADMIN: int
     MODERATOR: int
+    VOTE_LIMIT: int = 1
+
     DBPASS: SecretStr = "postgres"
     DBNAME: str = "postgres"
     DBUSER: str = "postgres"

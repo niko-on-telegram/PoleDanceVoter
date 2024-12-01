@@ -61,6 +61,7 @@ class Competitor(Base):
     dance_uncut: Mapped[str | None]
     video_mid: Mapped[str | None]
     video_pro: Mapped[str | None]
+    video_3rd_tour: Mapped[str | None]
     count_votes: Mapped[int] = mapped_column(default=0)
 
     def __str__(self):

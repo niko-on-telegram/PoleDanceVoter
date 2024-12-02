@@ -59,7 +59,8 @@ async def callback_vote(
         db_session: AsyncSession,
         user: User,
 ):
-    if user.count_votes >= settings.VOTE_LIMIT:
+    user_votes = await get_all_votes_ids(user.telegram_id, db_session)
+    if len(user_votes) >= settings.VOTE_LIMIT:
         await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
         return
 

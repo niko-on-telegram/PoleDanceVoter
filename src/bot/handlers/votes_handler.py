@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.callbacks.votes_factory import VotesCallbackFactory
 from bot.enums import VotesEnum
 from bot.keyboards.close_kb import CloseCallback
+from bot.states import StatesBot
 from database.crud.votes import add_votes_to_db
 
 from database.crud.contestant import inc_dec_vote_to_db as inc_dec_contestant_vote
@@ -21,9 +22,10 @@ router = Router()
 
 
 # noinspection PyTypeChecker
-@router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.VOTE))
+@router.callback_query(StatesBot.CONFIRMING_VOTE, VotesCallbackFactory.filter(F.action == VotesEnum.VOTE))
 async def callback_vote(
-        callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession
+        callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
+        state: FSMContext
 ):
     if isinstance(callback.message, InaccessibleMessage):
         logging.debug("Caught inaccessible message")
@@ -38,15 +40,17 @@ async def callback_vote(
         user_id=callback.from_user.id, competitor_id=callback_data.contestant_id, db_session=db_session
     )
     msg = await callback.message.answer("Спасибо за ваш голос!")
+    await state.set_state()
     await asyncio.sleep(5)
     await msg.delete()
 
 
-@router.callback_query(VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
+@router.callback_query(StatesBot.CONFIRMING_VOTE, VotesCallbackFactory.filter(F.action == VotesEnum.BACK))
 async def callback_back(
-    callback: types.CallbackQuery,
+    callback: types.CallbackQuery, state: FSMContext
 ):
     try:
+        await state.set_state()
         await callback.message.delete()
     except TelegramBadRequest:
         logging.info(f"Failed to delete message {callback.message.message_id}")

@@ -19,7 +19,7 @@ async def test_callback_back(
     callback = AsyncMock()
     callback.message = message
     callback_back_data = default_contestant_callback_factory_back
-    await callback_back(callback=callback, callback_data=callback_back_data, db_session=db_session, user=default_user)
+    await callback_back(callback=callback, callback_data=callback_back_data, db_session=db_session)
     called_args, called_kwargs = callback.message.answer_photo.call_args
     assert called_kwargs['photo'] == hello_img
     assert called_kwargs['caption'] == f'{default_user.full_name}, список участников:'

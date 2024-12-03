@@ -43,7 +43,7 @@ async def callback_delete(
 
 
 @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.BACK))
-async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession, user: User, state: FSMContext):
+async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession, state: FSMContext):
     data = await state.get_data()
     msg_ids = data.get("msg_ids", [])
     await delete_message_video(callback=callback, chat_id=callback.from_user.id, msg_list=msg_ids)
@@ -58,6 +58,7 @@ async def callback_vote(
         callback_data: ContestantProfileCallbackFactory,
         db_session: AsyncSession,
         user: User,
+        state: FSMContext
 ):
     user_votes = await get_all_votes_ids(user.telegram_id, db_session)
     if len(user_votes) >= settings.VOTE_LIMIT:
@@ -80,6 +81,7 @@ async def callback_vote(
         reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
     )
     await callback.answer()
+    await state.set_state(StatesBot.CONFIRMING_VOTE)
 
 
 # noinspection PyTypeChecker

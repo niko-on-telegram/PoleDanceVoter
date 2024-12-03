@@ -60,6 +60,11 @@ async def callback_vote(
         user: User,
         state: FSMContext
 ):
+    state_str = await state.get_state()
+    if state_str is not None:
+        logging.info(f"Ignoring non-empty state: {state_str}")
+        return
+
     user_votes = await get_all_votes_ids(user.telegram_id, db_session)
     if len(user_votes) >= settings.VOTE_LIMIT:
         await callback.answer(text="Вы уже проголосовали допустимое количество раз!")

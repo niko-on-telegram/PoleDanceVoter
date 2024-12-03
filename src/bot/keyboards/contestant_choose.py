@@ -8,11 +8,11 @@ from bot.enums import ContestantEnum
 
 def contestant_keyboard(contestant_id: int, show_vote_btn: bool) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    if show_vote_btn:
-        kb.button(
-            text='Проголосовать',
-            callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.VOTE),
-        )
+    # if show_vote_btn:
+    #     kb.button(
+    #         text='Проголосовать',
+    #         callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.VOTE),
+    #     )
     kb.button(
         text="Задать вопрос",
         callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.QUESTION),

@@ -6,9 +6,9 @@ from bot.callbacks.contestant_profile_callback import ContestantProfileCallbackF
 from bot.enums import ContestantEnum
 
 
-def contestant_keyboard(contestant_id: int, already_voted: bool) -> InlineKeyboardMarkup:
+def contestant_keyboard(contestant_id: int, show_vote_btn: bool) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    if not already_voted:
+    if show_vote_btn:
         kb.button(
             text='Проголосовать',
             callback_data=ContestantProfileCallbackFactory(contestant_id=contestant_id, action=ContestantEnum.VOTE),

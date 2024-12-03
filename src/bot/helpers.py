@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.internal.hello_img import logo_label
 from bot.keyboards.contestant_choose import contestant_keyboard
 from bot.keyboards.contestant_list import get_contestant_list
+from config import settings
 from database.crud.contestant import get_all_contestants, get_resource
 from database.crud.votes import get_all_votes_ids
 from database.models import Competitor
@@ -31,13 +32,13 @@ async def print_profile(message: Message, contestant: Competitor, db_session: As
     message = await message.answer_video(contestant.video_mid, protect_content=True)
     msg_list.append(message.message_id)
 
-    already_voted = False
     voters = await get_all_votes_ids(message.chat.id, db_session)
-    for voter in voters:
-        if voter.competitor_id == contestant.telegram_id:
-            already_voted = True
+    if len(voters) >= settings.VOTE_LIMIT:
+        show_vote_btn = False
+    else:
+        show_vote_btn = not any(voter.competitor_id == contestant.telegram_id for voter in voters)
 
-    reply_markup = contestant_keyboard(contestant.telegram_id, already_voted)
+    reply_markup = contestant_keyboard(contestant.telegram_id, show_vote_btn)
 
     message = await message.answer_video(contestant.video_pro, protect_content=True)
     msg_list.append(message.message_id)

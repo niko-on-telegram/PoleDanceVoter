@@ -13,7 +13,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
-      - ./db_dumps/stage_3_init_.sql:/docker-entrypoint-initdb.d/db_init_stage_3.sql
+      - ./db_dumps/stage_final_init_.sql:/docker-entrypoint-initdb.d/db_init_stage_3.sql
       - postgres_data:/var/lib/postgresql/data
   pgbackups:
     image: prodrigestivill/postgres-backup-local

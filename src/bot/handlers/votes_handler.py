@@ -22,27 +22,27 @@ router = Router()
 
 
 # noinspection PyTypeChecker
-# @router.callback_query(StatesBot.CONFIRMING_VOTE, VotesCallbackFactory.filter(F.action == VotesEnum.VOTE))
-# async def callback_vote(
-#         callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
-#         state: FSMContext
-# ):
-#     if isinstance(callback.message, InaccessibleMessage):
-#         logging.debug("Caught inaccessible message")
-#         return
-#     try:
-#         await callback.message.delete()
-#     except TelegramBadRequest:
-#         logging.info(f"Failed to delete message {callback.message.message_id}")
-#     await inc_dec_contestant_vote(callback_data.contestant_id, db_session)
-#     await inc_dec_user_vote(callback.from_user.id, db_session)
-#     await add_votes_to_db(
-#         user_id=callback.from_user.id, competitor_id=callback_data.contestant_id, db_session=db_session
-#     )
-#     msg = await callback.message.answer("Спасибо за ваш голос!")
-#     await state.set_state()
-#     await asyncio.sleep(5)
-#     await msg.delete()
+@router.callback_query(StatesBot.CONFIRMING_VOTE, VotesCallbackFactory.filter(F.action == VotesEnum.VOTE))
+async def callback_vote(
+        callback: types.CallbackQuery, callback_data: VotesCallbackFactory, db_session: AsyncSession,
+        state: FSMContext
+):
+    if isinstance(callback.message, InaccessibleMessage):
+        logging.debug("Caught inaccessible message")
+        return
+    try:
+        await callback.message.delete()
+    except TelegramBadRequest:
+        logging.info(f"Failed to delete message {callback.message.message_id}")
+    await inc_dec_contestant_vote(callback_data.contestant_id, db_session)
+    await inc_dec_user_vote(callback.from_user.id, db_session)
+    await add_votes_to_db(
+        user_id=callback.from_user.id, competitor_id=callback_data.contestant_id, db_session=db_session
+    )
+    msg = await callback.message.answer("Спасибо за ваш голос!")
+    await state.set_state()
+    await asyncio.sleep(5)
+    await msg.delete()
 
 
 @router.callback_query(StatesBot.CONFIRMING_VOTE, VotesCallbackFactory.filter(F.action == VotesEnum.BACK))

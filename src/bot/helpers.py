@@ -70,5 +70,5 @@ Pole Dance вечеринка, посвящённая ФИНАЛУ и оглаш
     await message.answer_photo(
         photo=logo_id,
         caption=main_message,
-        reply_markup=get_contestant_list(contestants),
+        # reply_markup=get_contestant_list(contestants),
     )

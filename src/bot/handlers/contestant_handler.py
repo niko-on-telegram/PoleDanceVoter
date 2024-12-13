@@ -51,42 +51,42 @@ async def callback_back(callback: types.CallbackQuery, db_session: AsyncSession,
     await print_constestant_list(message=callback.message, db_session=db_session)
     await state.clear()
 
-
-@router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
-async def callback_vote(
-        callback: types.CallbackQuery,
-        callback_data: ContestantProfileCallbackFactory,
-        db_session: AsyncSession,
-        user: User,
-        state: FSMContext
-):
-    state_str = await state.get_state()
-    if state_str is not None:
-        logging.info(f"Ignoring non-empty state: {state_str}")
-        return
-
-    user_votes = await get_all_votes_ids(user.telegram_id, db_session)
-    if len(user_votes) >= settings.VOTE_LIMIT:
-        await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
-        return
-
-    voters = await get_all_votes_ids(user.telegram_id, db_session)
-    for voter in voters:
-        if voter.competitor_id == callback_data.contestant_id:
-            await callback.answer(text="Вы уже голосовали за этого участника!")
-            return
-
-    contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
-
-    if contestant is None:
-        await print_constestant_list(callback.message, db_session)
-        return
-    await callback.message.answer(
-        text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
-        reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
-    )
-    await callback.answer()
-    await state.set_state(StatesBot.CONFIRMING_VOTE)
+#
+# @router.callback_query(ContestantProfileCallbackFactory.filter(F.action == ContestantEnum.VOTE))
+# async def callback_vote(
+#         callback: types.CallbackQuery,
+#         callback_data: ContestantProfileCallbackFactory,
+#         db_session: AsyncSession,
+#         user: User,
+#         state: FSMContext
+# ):
+#     state_str = await state.get_state()
+#     if state_str is not None:
+#         logging.info(f"Ignoring non-empty state: {state_str}")
+#         return
+#
+#     user_votes = await get_all_votes_ids(user.telegram_id, db_session)
+#     if len(user_votes) >= settings.VOTE_LIMIT:
+#         await callback.answer(text="Вы уже проголосовали допустимое количество раз!")
+#         return
+#
+#     voters = await get_all_votes_ids(user.telegram_id, db_session)
+#     for voter in voters:
+#         if voter.competitor_id == callback_data.contestant_id:
+#             await callback.answer(text="Вы уже голосовали за этого участника!")
+#             return
+#
+#     contestant = await get_competitor_from_db(callback_data.contestant_id, db_session)
+#
+#     if contestant is None:
+#         await print_constestant_list(callback.message, db_session)
+#         return
+#     await callback.message.answer(
+#         text=f"Вы уверены что хотите проголосовать за участника {contestant.full_name}?",
+#         reply_markup=votes_keyboard(contestant_id=contestant.telegram_id),
+#     )
+#     await callback.answer()
+#     await state.set_state(StatesBot.CONFIRMING_VOTE)
 
 
 # noinspection PyTypeChecker
